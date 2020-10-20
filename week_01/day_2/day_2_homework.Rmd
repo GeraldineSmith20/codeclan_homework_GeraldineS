@@ -1,0 +1,88 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+# Homework
+
+```{r}
+library(tidyverse)
+```
+
+
+#Question 1
+```{r}
+starbucks_drinks <- read_csv("data/starbucks_drinkMenu_expanded.csv")
+
+dim(starbucks_drinks)
+
+names(starbucks_drinks)
+
+```
+
+# Question 2, 3, 4
+```{r}
+starbucks_drinks %>% 
+  select(Beverage_category, Beverage, Beverage_prep,Calories) %>% 
+  filter(!is.na(Calories)) %>% 
+  mutate(calorie_diff = 135 - Calories) %>% 
+  group_by(Beverage_category) -> drinks_with_calories
+
+```
+
+# Question 5
+```{r}
+summarise(drinks_with_calories, mean(Calories))
+```
+```{r}
+slice_max(starbucks_drinks, Calories, n = 3) 
+
+```
+
+```{r}
+slice_min(starbucks_drinks, Calories, n = 3)
+```
+
+```{r}
+starbucks_drinks %>% 
+  select(Beverage_category, Beverage, Beverage_prep,Calories) %>% 
+  filter(!is.na(Calories)) %>% 
+  mutate(calorie_diff = 135 - Calories) %>% 
+  group_by(Beverage_prep)  %>% 
+  summarise(mean(Calories))
+```
+
+# Question 6
+```{r}
+starbucks_drinks %>% 
+  select(Beverage_category, Beverage, Beverage_prep,Calories) %>% 
+  filter(!is.na(Calories)) %>% 
+  mutate(calorie_diff = 135 - Calories) %>%
+  summarise(mean(Calories)) -> mean_calories
+mean_calories
+```
+
+```{r}
+starbucks_drinks %>% 
+  select(Beverage_category, Beverage, Beverage_prep,Calories) %>% 
+  filter(!is.na(Calories)) %>% 
+  mutate(calorie_diff = 135 - Calories) %>% 
+  group_by(Beverage_prep)  %>% 
+  summarise(mean(Calories)) -> Beverage_prep_calories
+  filter(Beverage_prep_calories > mean_calories)
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
