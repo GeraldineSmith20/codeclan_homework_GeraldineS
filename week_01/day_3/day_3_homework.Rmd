@@ -1,0 +1,108 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+```{r}
+library(tidyverse)
+```
+
+# Question 1
+Thoughts on the data so far...(opened file and looked)
+  - release date is stored as character
+  - homepage has a few na's
+  - tagline has a few na's
+  - budget has some 0 figures
+  - variable names all look good I think
+
+Could also use filter is.na to check how many na's in various columns?
+  
+```{r}
+movie_data <- read_csv("data/movies.csv")
+
+names(movie_data)
+```
+
+# Question 2
+```{r}
+movies_selected <- movie_data %>% 
+  select(title, runtime, budget)
+
+movies_selected
+ 
+```
+
+# Question 3
+```{r}
+movies_selected %>% 
+  filter(is.na (runtime) | is.na (title) | is.na (budget))
+  
+```
+
+# Question 4
+```{r}
+movies_runtime <- movies_selected %>% 
+                  mutate(runtime = na_if(runtime, 0))
+movies_runtime
+```
+
+```{r}
+summarise(movies_runtime, count = sum(is.na(runtime)))
+```
+
+# Question 5
+```{r}
+movies_imputed <- 
+  movies_runtime %>% 
+  mutate(runtime = coalesce
+                  (runtime, median(runtime), na.rm = TRUE))
+movies_imputed
+  
+```
+
+```{r}
+summarise(movies_imputed, count = sum(is.na(runtime)))
+```
+
+# Question 6
+
+```{r}
+movies_imputed %>%  
+  slice_min(runtime, n = 10)
+```
+```{r}
+movies_imputed %>%  
+  slice_max(runtime, n = 10)
+```
+
+# Question 7
+
+```{r}
+movies_imputed <- movies_imputed %>%
+                  mutate(budget = 
+                          if_else(budget < 100,
+                                  median(budget),
+                                  budget)) %>%
+                  arrange(budget)
+  
+
+movies_imputed
+                  
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

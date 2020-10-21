@@ -57,18 +57,18 @@ starbucks_drinks %>%
   select(Beverage_category, Beverage, Beverage_prep,Calories) %>% 
   filter(!is.na(Calories)) %>% 
   mutate(calorie_diff = 135 - Calories) %>%
-  summarise(mean(Calories)) -> mean_calories
-mean_calories
+  summarise(mean(Calories)) -> avg_calories
+avg_calories$`mean(Calories)`
 ```
 
 ```{r}
 starbucks_drinks %>% 
-  select(Beverage_category, Beverage, Beverage_prep,Calories) %>% 
+  select(Beverage_category, Beverage, Beverage_prep, Calories) %>% 
   filter(!is.na(Calories)) %>% 
   mutate(calorie_diff = 135 - Calories) %>% 
   group_by(Beverage_prep)  %>% 
-  summarise(mean(Calories)) -> Beverage_prep_calories
-  filter(Beverage_prep_calories > mean_calories)
+  summarise(mean(Calories)) %>% 
+  filter(mean(Calories) - avg_calories$'mean(Calories))')
 ```
 
 
