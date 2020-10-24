@@ -54,7 +54,8 @@ summarise(movies_runtime, count = sum(is.na(runtime)))
 movies_imputed <- 
   movies_runtime %>% 
   mutate(runtime = coalesce
-                  (runtime, median(runtime), na.rm = TRUE))
+                  (runtime, median(runtime), na.rm = TRUE)) %>% 
+  arrange(runtime)
 movies_imputed
   
 ```

@@ -1,0 +1,106 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+```{r}
+library(tidyverse)
+```
+
+```{r}
+book_data <- read_csv("data/books.csv")
+head(book_data)
+```
+
+```{r}
+problems(book_data)
+```
+
+```{r}
+#1 - Count of missing values per column
+
+book_data %>% 
+  select(everything()) %>% 
+  summarise_all(funs(sum(is.na(.))))
+```
+
+```{r}
+# Check of #1
+book_data %>%
+  summarise(total_na = sum(is.na(book_data)))
+```
+
+```{r}
+#Output NA's to discuss in class on Monday!
+book_data %>% 
+  filter(is.na(average_rating))
+```
+
+```{r}
+#2 Count of books in each language
+book_data %>% 
+  group_by(language_code) %>% 
+  summarise(count = n()) %>% 
+  filter(str_detect(language_code, "en"))
+```
+
+
+```{r}
+#3 Imputing NA's in average rating with median of average rating and replacing all en with eng and filtering on this
+
+imputed_median_book_data <- book_data %>% 
+  mutate(average_rating = 
+           coalesce(
+            average_rating, median(average_rating, na.rm = TRUE))) %>% 
+  mutate(language_code = 
+           recode(
+           language_code, "en-CA" = "eng",
+                          "en-GB" = "eng", 
+                          "en-US" = "eng", 
+                          "enm" = "eng")) %>% 
+  select(title, 
+         authors, 
+         average_rating, 
+         publication_date, 
+         ratings_count, 
+         text_reviews_count, 
+         language_code) %>%
+  
+  filter(language_code == "eng")
+
+imputed_median_book_data
+
+```
+
+
+```{r}
+#4 Authors sorted by highest number of books published (in English)
+imputed_median_book_data %>%
+  group_by(authors) %>% 
+  summarise(no_of_books = n()) %>% 
+  arrange(desc(no_of_books))
+```
+
+
+```{r}
+# 5 Top 10 authors by average rating (published in English) - filtered data to ensure at least 1000 ratings where available given range of ratings_count
+
+range(imputed_median_book_data$ratings_count)
+median(imputed_median_book_data$ratings_count)
+
+imputed_median_book_data %>% 
+  filter(ratings_count >= 1000) %>% 
+  group_by(authors) %>% 
+  summarise(average_overall_rating = mean(average_rating), no_of_ratings = sum(ratings_count)) %>% 
+  slice_max(average_overall_rating, n = 10)
+  
+```
+
+
+
+
+
+
+
+
+
