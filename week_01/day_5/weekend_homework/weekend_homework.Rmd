@@ -23,6 +23,12 @@ book_data %>%
   select(everything()) %>% 
   summarise_all(funs(sum(is.na(.))))
 ```
+from homework answers same as above
+```{r}
+book_data %>% 
+  summarise(across(.fns = ~ sum(is.na(.x))))
+```
+
 
 ```{r}
 # Check of #1

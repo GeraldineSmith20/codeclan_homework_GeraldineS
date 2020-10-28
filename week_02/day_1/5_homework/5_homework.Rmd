@@ -1,0 +1,131 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+```{r}
+library(tidyverse)
+library(janitor)
+```
+
+Question 1
+```{r}
+card_base <- read_csv("data/CardBase.csv") %>% 
+  clean_names()
+customer_base <- read_csv("data/CustomerBase.csv") %>% 
+  clean_names()
+fraud_base <- read_csv("data/FraudBase.csv") %>% 
+  clean_names()
+transaction_base <- read_csv("data/TransactionBase.csv") %>% 
+  clean_names()
+```
+
+Question 2 - should return 500 rows (all rows from the left table)
+```{r}
+card_customer <- left_join(card_base, customer_base,
+          by = "cust_id")
+card_customer
+
+```
+
+Question 3 - join fraud details with transaction details so all rows of both tables are kept.....
+What does resulting row number tell you?
+```{r}
+fraud_transactions <- full_join(fraud_base, transaction_base,
+                                by = "transaction_id")
+fraud_transactions
+
+#returns 10,000 rows which is the same number as that in transaction table which suggests all fraud transactions are accounted forin the transactions table
+```
+
+Question 4 - Join the data containing card details with transaction details so rows from the first which have matching ones in the second are returned, but only return rows in the first table once.
+
+```{r}
+card_transactions <- semi_join(card_base, transaction_base,
+                              by = c("card_number" = "credit_card_id")
+                              )
+card_transactions
+```
+
+Question 5 - Read in hat_observations and separate observation into two columns, hat_colour and hat_type
+
+```{r}
+hats <- read_csv("data/hat_observations.csv") %>% 
+  separate(observation,
+          c("hat_colour", "hat_type"),
+          sep = ",")
+
+hats
+```
+
+
+Question 6 - Unite day, month, and year columns into a column called date using a suitable separator. Then find the date where the most berets were observed.
+
+```{r}
+hats_united <- unite(hats, date, c("day", "month", "year"),
+                     sep = "/") %>% 
+  filter(hat_type == "beret") %>% 
+  group_by(date) %>% 
+  summarise(total = sum(observation_count)) %>% 
+  slice_max(total)
+
+hats_united
+```
+
+Extension Question 1 - 109 rows and 12 columns?
+
+```{r}
+fraud_transactions <- left_join(fraud_base, transaction_base, by = "transaction_id")
+
+fraud_details <- left_join(fraud_transactions, card_base, by = c("credit_card_id" = "card_number"))
+
+frauded_customers <- left_join(fraud_details, customer_base, by = "cust_id") %>% 
+  select(card_number = credit_card_id, 
+         card_family, 
+         credit_limit, 
+         cust_id, 
+         age, 
+         customer_segment, 
+         customer_vintage_group, 
+         transaction_id, 
+         transaction_date,
+         transaction_value,
+         transaction_segment, 
+         fraud_flag)
+
+frauded_customers
+```
+
+Extension Question 2 - Read in exam_scores and transform it into long format with two new columns exam_question and score. Then, using separate and select, remove superfluous information from the values in exam_question.
+
+```{r}
+exam_scores <- read_csv("data/exam_scores.csv")
+```
+
+```{r}
+exam_scores_long <- exam_scores %>% 
+  pivot_longer(cols = starts_with("exam"),
+               names_to = "exam_question",
+               values_to = "score")
+exam_scores_long
+```
+
+```{r}
+exam_scores_long %>% 
+  separate(exam_question,
+           c("exam", "question"),
+           sep = "_") %>% 
+  select(-exam)
+```
+
+
+
+
+
+
+
+
+
+
+
+
