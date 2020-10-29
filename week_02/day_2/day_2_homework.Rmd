@@ -71,7 +71,34 @@ Q7. From your new joined data, create a new tibble codeclan_hashtags containing 
 code_clan_tibble %>% 
   mutate(tweet_id = str_to_lower(tweet_id)) %>% 
   mutate(hashtags = str_to_lower(hashtags)) %>% 
-  select(tweet_id, hashtags)
+  select(tweet_id, hashtags) %>% 
+  drop_na()
+
+```
+
+Q8. Some tweets have more than one hashtag, denoted by the c( symbols at the start of the string. Use the str_sub() and str_detect() functions and your codeclan_hashtags tibble from above to find all the cases in which the hashtag string begins with characters.
+
+```{r}
+pattern <- "[-#@]"
+code_clan_tibble %>% 
+  mutate()
+```
+
+Q9. Use the str_detect() function to find all tweets with text that mentions “Edinburgh”, and count how many such tweets there are.
+
+```{r}
+pattern <- "[Ee][Dd][Ii][Nn][Bb][Uu][Rr][Gg][Hh]"
+
+code_clan_tibble %>% 
+  mutate(edinburgh_detected = str_detect(text, pattern)) %>% 
+  select(text, edinburgh_detected)
+  
+
+```
+
+Q10. Use str_extract_all() with a regular expression to find out which Twitter users CodeClan have been tweeting.
+
+```{r}
 
 ```
 

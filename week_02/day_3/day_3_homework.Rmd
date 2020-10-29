@@ -1,0 +1,131 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+Q1. Find the weather forecast for the next three days. Each list element should have the name of the day of the week. Inside each element should be another named list that tells you the temperature, chance of rain and wind speed.
+
+```{r}
+weather <- list(
+  "Thursday" = list(temp = 10, chance_rain = 0.79, wind_speed = 14), 
+  "Friday" = list(temp = 14, chance_rain = 0.72, wind_speed = 13),
+  "Saturday" = list(tenp = 13, chance_rain = 0.54, wind_speed = 14)
+)
+```
+
+Q2. Using the list you’ve just made find:
+
+-The chance of rain tomorrow
+-The wind speed on the day after tomorrow
+-The temperature tomorrow.
+```{r}
+weather$Thursday$chance_rain
+
+weather$Friday$wind_speed
+
+weather$Thursday$temp
+```
+
+1.3.1
+Find a 14 day forecast and create a matrix of the forecasts for temperature, where each week is one row.
+You will want to give a name to the matrix you create.
+
+```{r}
+dates_wk1 <- list(29, 30, 31, 1, 2, 3, 4)
+dates_wk2 <- list(5, 6, 7, 8, 9, 10, 11)
+
+weather_matrix <- matrix(c(10,13,14,13,11,10,9,10,11,11,10,9,9,8), 
+                         ncol = 7, nrow = 2, byrow = TRUE) 
+                         # = list(dates_wk1, dates_wk2))
+
+weather_matrix
+```
+
+1.3.2 Now select:
+
+The third day of the second week
+The whole second week
+The first, third and fifth days in both weeks.
+
+```{r}
+weather_matrix[2, 3]
+weather_matrix[2,]
+weather_matrix[c(1, 2), c(1, 3, 5)]
+```
+
+1.4
+Write a function that pre-appends “The answer is:” to any character input, and either returns the number for numbers less than 10, or divides the number by 10 for numbers greater than 10. For anything else return “Invalid input”.
+
+```{r}
+give_answer <- function(x){
+  if (is.numeric(x)){
+    if (x < 10) {
+      return(paste("The answer is", x, sep = " "))
+    } else {
+      return(paste("The answer is", x / 10, sep = " "))
+    }
+  }
+  print("Invalid input")
+}
+
+give_answer(25)
+```
+
+1.5
+Write a function which checks if two vectors have the same elements.
+
+If they have the same elements in the same order, return “Exactly the same”
+
+If they have the same elements but in a different order, return “The same”
+
+If they don’t have the same elements, return “Different”.
+
+```{r}
+check_vectors <- function(x, y){
+  
+  for (i in 1:length(x)){
+    
+    if (x[i] != y[i]){
+      x <- sort(x)
+      y <- sort(y)
+      for (j in 1:length(x)){
+        
+        if (x[j] != y[j]){
+          return(print("Different"))
+        }
+        
+      }
+      return(print("The same"))
+    }
+  
+    
+  }
+  return(print("Exactly the same"))
+}
+
+a <- c(1, 5, 10)
+b <- c(10, 1, 5)
+c <- c(1, 5, 10)
+
+check_vectors(a,b)
+
+
+
+
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
