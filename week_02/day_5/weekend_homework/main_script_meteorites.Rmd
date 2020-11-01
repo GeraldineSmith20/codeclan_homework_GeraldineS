@@ -1,0 +1,39 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+```{r}
+source("weekend_homework.R")
+```
+
+```{r}
+meteorites %>% 
+  summarise(across(.fns = ~ sum(is.na(.x))))
+```
+
+
+```{r}
+meteorites %>% 
+  drop_na(year) %>% 
+  slice_max(mass_g, n = 10) %>% 
+  select(name, year, mass_g)
+```
+
+```{r}
+meteorites %>% 
+  group_by(fall) %>% 
+  summarise(avg_weight = mean(mass_g))
+```
+
+```{r}
+meteorites %>% 
+  filter(year >= 2000) %>% 
+  group_by(year) %>% 
+  summarise(n())
+```
+
+
+
+
+

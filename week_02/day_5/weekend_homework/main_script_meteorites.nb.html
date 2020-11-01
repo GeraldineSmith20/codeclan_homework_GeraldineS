@@ -1758,174 +1758,87 @@ summary {
 
 
 <!-- rnb-text-begin -->
-<p>Q1. Find the weather forecast for the next three days. Each list element should have the name of the day of the week. Inside each element should be another named list that tells you the temperature, chance of rain and wind speed.</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxud2VhdGhlciA8LSBsaXN0KFxuICBcIlRodXJzZGF5XCIgPSBsaXN0KHRlbXAgPSAxMCwgY2hhbmNlX3JhaW4gPSAwLjc5LCB3aW5kX3NwZWVkID0gMTQpLCBcbiAgXCJGcmlkYXlcIiA9IGxpc3QodGVtcCA9IDE0LCBjaGFuY2VfcmFpbiA9IDAuNzIsIHdpbmRfc3BlZWQgPSAxMyksXG4gIFwiU2F0dXJkYXlcIiA9IGxpc3QodGVucCA9IDEzLCBjaGFuY2VfcmFpbiA9IDAuNTQsIHdpbmRfc3BlZWQgPSAxNClcbilcbmBgYCJ9 -->
-<pre class="r"><code>weather &lt;- list(
-  &quot;Thursday&quot; = list(temp = 10, chance_rain = 0.79, wind_speed = 14), 
-  &quot;Friday&quot; = list(temp = 14, chance_rain = 0.72, wind_speed = 13),
-  &quot;Saturday&quot; = list(tenp = 13, chance_rain = 0.54, wind_speed = 14)
-)</code></pre>
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuc291cmNlKFwid2Vla2VuZF9ob21ld29yay5SXCIpXG5gYGAifQ== -->
+<pre class="r"><code>source(&quot;weekend_homework.R&quot;)</code></pre>
 <!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<p>Q2. Using the list you’ve just made find:</p>
-<p>-The chance of rain tomorrow -The wind speed on the day after tomorrow -The temperature tomorrow.</p>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxud2VhdGhlciRUaHVyc2RheSRjaGFuY2VfcmFpblxuYGBgIn0= -->
-<pre class="r"><code>weather$Thursday$chance_rain</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiWzFdIDAuNzlcbiJ9 -->
-<pre><code>[1] 0.79</code></pre>
-<!-- rnb-output-end -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxud2VhdGhlciRGcmlkYXkkd2luZF9zcGVlZFxuYGBgIn0= -->
-<pre class="r"><code>weather$Friday$wind_speed</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiWzFdIDEzXG4ifQ== -->
-<pre><code>[1] 13</code></pre>
-<!-- rnb-output-end -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxud2VhdGhlciRUaHVyc2RheSR0ZW1wXG5gYGAifQ== -->
-<pre class="r"><code>weather$Thursday$temp</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiWzFdIDEwXG4ifQ== -->
-<pre><code>[1] 10</code></pre>
-<!-- rnb-output-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<p>1.3.1 Find a 14 day forecast and create a matrix of the forecasts for temperature, where each week is one row. You will want to give a name to the matrix you create.</p>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuZGF0ZXNfd2sxIDwtIGxpc3QoMjksIDMwLCAzMSwgMSwgMiwgMywgNClcbmRhdGVzX3drMiA8LSBsaXN0KDUsIDYsIDcsIDgsIDksIDEwLCAxMSlcblxuXG53ZWF0aGVyX21hdHJpeCA8LSBtYXRyaXgoYygxMCwxMywxNCwxMywxMSwxMCw5LDEwLDExLDExLDEwLDksOSw4KSwgXG4gICAgICAgICAgICAgICAgICAgICAgICAgbmNvbCA9IDcsIG5yb3cgPSAyLCBieXJvdyA9IFRSVUUpIFxuICAgICAgICAgICAgICAgICAgICAgICAgICMgPSBsaXN0KGRhdGVzX3drMSwgZGF0ZXNfd2syKSlcbndlYXRoZXJfbWF0cml4XG5gYGAifQ== -->
-<pre class="r"><code>dates_wk1 &lt;- list(29, 30, 31, 1, 2, 3, 4)
-dates_wk2 &lt;- list(5, 6, 7, 8, 9, 10, 11)
-
-
-weather_matrix &lt;- matrix(c(10,13,14,13,11,10,9,10,11,11,10,9,9,8), 
-                         ncol = 7, nrow = 2, byrow = TRUE) 
-                         # = list(dates_wk1, dates_wk2))
-weather_matrix</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiICAgICBbLDFdIFssMl0gWywzXSBbLDRdIFssNV0gWyw2XSBbLDddXG5bMSxdICAgMTAgICAxMyAgIDE0ICAgMTMgICAxMSAgIDEwICAgIDlcblsyLF0gICAxMCAgIDExICAgMTEgICAxMCAgICA5ICAgIDkgICAgOFxuIn0= -->
-<pre><code>     [,1] [,2] [,3] [,4] [,5] [,6] [,7]
-[1,]   10   13   14   13   11   10    9
-[2,]   10   11   11   10    9    9    8</code></pre>
-<!-- rnb-output-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<p>1.3.2 Now select:</p>
-<p>The third day of the second week The whole second week The first, third and fifth days in both weeks.</p>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxud2VhdGhlcl9tYXRyaXhbMiwgM11cbmBgYCJ9 -->
-<pre class="r"><code>weather_matrix[2, 3]</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiWzFdIDExXG4ifQ== -->
-<pre><code>[1] 11</code></pre>
-<!-- rnb-output-end -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxud2VhdGhlcl9tYXRyaXhbMixdXG5gYGAifQ== -->
-<pre class="r"><code>weather_matrix[2,]</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiWzFdIDEwIDExIDExIDEwICA5ICA5ICA4XG4ifQ== -->
-<pre><code>[1] 10 11 11 10  9  9  8</code></pre>
-<!-- rnb-output-end -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxud2VhdGhlcl9tYXRyaXhbYygxLCAyKSwgYygxLCAzLCA1KV1cbmBgYCJ9 -->
-<pre class="r"><code>weather_matrix[c(1, 2), c(1, 3, 5)]</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiICAgICBbLDFdIFssMl0gWywzXVxuWzEsXSAgIDEwICAgMTQgICAxMVxuWzIsXSAgIDEwICAgMTEgICAgOVxuIn0= -->
-<pre><code>     [,1] [,2] [,3]
-[1,]   10   14   11
-[2,]   10   11    9</code></pre>
-<!-- rnb-output-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<p>1.4 Write a function that pre-appends “The answer is:” to any character input, and either returns the number for numbers less than 10, or divides the number by 10 for numbers greater than 10. For anything else return “Invalid input”.</p>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuZ2l2ZV9hbnN3ZXIgPC0gZnVuY3Rpb24oeCl7XG4gIGlmIChpcy5udW1lcmljKHgpKXtcbiAgICBpZiAoeCA8IDEwKSB7XG4gICAgICByZXR1cm4ocGFzdGUoXCJUaGUgYW5zd2VyIGlzXCIsIHgsIHNlcCA9IFwiIFwiKSlcbiAgICB9IGVsc2Uge1xuICAgICAgcmV0dXJuKHBhc3RlKFwiVGhlIGFuc3dlciBpc1wiLCB4IC8gMTAsIHNlcCA9IFwiIFwiKSlcbiAgICB9XG4gIH1cbiAgcHJpbnQoXCJJbnZhbGlkIGlucHV0XCIpXG59XG5cbmdpdmVfYW5zd2VyKDEwLjUpXG5gYGAifQ== -->
-<pre class="r"><code>give_answer &lt;- function(x){
-  if (is.numeric(x)){
-    if (x &lt; 10) {
-      return(paste(&quot;The answer is&quot;, x, sep = &quot; &quot;))
-    } else {
-      return(paste(&quot;The answer is&quot;, x / 10, sep = &quot; &quot;))
-    }
-  }
-  print(&quot;Invalid input&quot;)
-}
-
-give_answer(10.5)</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiWzFdIFwiVGhlIGFuc3dlciBpcyAxLjA1XCJcbiJ9 -->
-<pre><code>[1] &quot;The answer is 1.05&quot;</code></pre>
-<!-- rnb-output-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuZ2l2ZV9hbnN3ZXIyIDwtIGZ1bmN0aW9uKHgpe1xuICBpZiAoeCAhPSAxMCl7XG4gICAgaWYgKHggPCAxMCkge1xuICAgICAgcmV0dXJuKHBhc3RlKFwiVGhlIGFuc3dlciBpc1wiLCB4LCBzZXAgPSBcIiBcIikpXG4gICAgfSBlbHNlIHtcbiAgICAgIHJldHVybihwYXN0ZShcIlRoZSBhbnN3ZXIgaXNcIiwgeCAvIDEwLCBzZXAgPSBcIiBcIikpXG4gICAgfVxuICB9XG4gIHByaW50KFwiSW52YWxpZCBpbnB1dFwiKVxufVxuXG5naXZlX2Fuc3dlcjIoMTApXG5gYGAifQ== -->
-<pre class="r"><code>give_answer2 &lt;- function(x){
-  if (x != 10){
-    if (x &lt; 10) {
-      return(paste(&quot;The answer is&quot;, x, sep = &quot; &quot;))
-    } else {
-      return(paste(&quot;The answer is&quot;, x / 10, sep = &quot; &quot;))
-    }
-  }
-  print(&quot;Invalid input&quot;)
-}
-
-give_answer2(10)</code></pre>
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubWV0ZW9yaXRlcyAlPiUgXG4gIHN1bW1hcmlzZShhY3Jvc3MoLmZucyA9IH4gc3VtKGlzLm5hKC54KSkpKVxuYGBgIn0= -->
+<pre class="r"><code>meteorites %&gt;% 
+  summarise(across(.fns = ~ sum(is.na(.x))))</code></pre>
 <!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiWzFdIFwiSW52YWxpZCBpbnB1dFwiXG4ifQ== -->
-<pre><code>[1] &quot;Invalid input&quot;</code></pre>
-<!-- rnb-output-end -->
+<!-- rnb-frame-begin eyJtZXRhZGF0YSI6eyJjbGFzc2VzIjpbInRibF9kZiIsInRibCIsImRhdGEuZnJhbWUiXSwibnJvdyI6MSwibmNvbCI6OH0sInJkZiI6Ikg0c0lBQUFBQUFBQUE1VlF5MDdETUJEY3VIR2JST1VoOVR1U0MwS0NPK0lES3BCNnEwemloZ2pYcmh4SHdLMi94YysxckJPdlNpTTRZTW4yZUhiWE83UExoOVZOdHNvQVlBS1RLWjRjSWZEbnA4ZjhEaUJtK0lnZ2h0VGZIeGhlSUVod1gvU0JZZjBIMzU4dysvbzcvNnd4MTJJcld3VFhmZk9CWkUwVlVPekRBVSszb20zWE5VVTJRaW5DbjFMWWdPZTFOR3RsU3VFYW93T1hLSHk1cnFLZlVtVjBQUkRuYWxKcjNndFM1Q1d6UFI1SFhHUFpwVUl4UVRhUldTV2NLRGJXU3dZNGpFcG1adWNsWVJIemcrYWo0c2lPaUt0T2V5VlZYcjUyK2kyLzlRMStHV2owQXlkRFMzWU1YM0dhbkVTN210eHpKVjRramU0U0hmZUdpNTF0dENNbnlMYUZNMDVRWGxZYVJVenZEUTdmckExV2dGOENBQUE9In0= -->
+<div data-pagedtable="false">
+<script data-pagedtable-source type="application/json">
+{"columns":[{"label":["id"],"name":[1],"type":["int"],"align":["right"]},{"label":["name"],"name":[2],"type":["int"],"align":["right"]},{"label":["mass_g"],"name":[3],"type":["int"],"align":["right"]},{"label":["fall"],"name":[4],"type":["int"],"align":["right"]},{"label":["year"],"name":[5],"type":["int"],"align":["right"]},{"label":["geo_location"],"name":[6],"type":["int"],"align":["right"]},{"label":["latitude"],"name":[7],"type":["int"],"align":["right"]},{"label":["longitude"],"name":[8],"type":["int"],"align":["right"]}],"data":[{"1":"0","2":"0","3":"0","4":"0","5":"57","6":"697","7":"0","8":"0"}],"options":{"columns":{"min":{},"max":[10],"total":[8]},"rows":{"min":[10],"max":[10],"total":[1]},"pages":{}}}
+  </script>
+</div>
+<!-- rnb-frame-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
-<p>1.5 Write a function which checks if two vectors have the same elements.</p>
-<p>If they have the same elements in the same order, return “Exactly the same”</p>
-<p>If they have the same elements but in a different order, return “The same”</p>
-<p>If they don’t have the same elements, return “Different”.</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuY2hlY2tfdmVjdG9ycyA8LSBmdW5jdGlvbih4LCB5KXtcbiAgXG4gIGZvciAoaSBpbiAxOmxlbmd0aCh4KSl7XG4gICAgXG4gICAgaWYgKHhbaV0gIT0geVtpXSl7XG4gICAgICB4IDwtIHNvcnQoeClcbiAgICAgIHkgPC0gc29ydCh5KVxuICAgICAgZm9yIChqIGluIDE6bGVuZ3RoKHgpKXtcbiAgICAgICAgXG4gICAgICAgIGlmICh4W2pdICE9IHlbal0pe1xuICAgICAgICAgIHJldHVybihwcmludChcIkRpZmZlcmVudFwiKSlcbiAgICAgICAgfVxuICAgICAgICBcbiAgICAgIH1cbiAgICAgIHJldHVybihwcmludChcIlRoZSBzYW1lXCIpKVxuICAgIH1cbiAgXG4gICAgXG4gIH1cbiAgcmV0dXJuKHByaW50KFwiRXhhY3RseSB0aGUgc2FtZVwiKSlcbn1cblxuYSA8LSBjKDEsIDUsIDEwKVxuYiA8LSBjKDEwLCAxLCA1KVxuYyA8LSBjKDEsIDUsIDEwKVxuXG5jaGVja192ZWN0b3JzKGEsYilcbmBgYCJ9 -->
-<pre class="r"><code>check_vectors &lt;- function(x, y){
-  
-  for (i in 1:length(x)){
-    
-    if (x[i] != y[i]){
-      x &lt;- sort(x)
-      y &lt;- sort(y)
-      for (j in 1:length(x)){
-        
-        if (x[j] != y[j]){
-          return(print(&quot;Different&quot;))
-        }
-        
-      }
-      return(print(&quot;The same&quot;))
-    }
-  
-    
-  }
-  return(print(&quot;Exactly the same&quot;))
-}
-
-a &lt;- c(1, 5, 10)
-b &lt;- c(10, 1, 5)
-c &lt;- c(1, 5, 10)
-
-check_vectors(a,b)</code></pre>
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubWV0ZW9yaXRlcyAlPiUgXG4gIGRyb3BfbmEoeWVhcikgJT4lIFxuICBzbGljZV9tYXgobWFzc19nLCBuID0gMTApICU+JSBcbiAgc2VsZWN0KG5hbWUsIHllYXIsIG1hc3NfZylcbmBgYCJ9 -->
+<pre class="r"><code>meteorites %&gt;% 
+  drop_na(year) %&gt;% 
+  slice_max(mass_g, n = 10) %&gt;% 
+  select(name, year, mass_g)</code></pre>
 <!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiWzFdIFwiVGhlIHNhbWVcIlxuIn0= -->
-<pre><code>[1] &quot;The same&quot;</code></pre>
+<!-- rnb-frame-begin eyJtZXRhZGF0YSI6eyJjbGFzc2VzIjpbInRibF9kZiIsInRibCIsImRhdGEuZnJhbWUiXSwibnJvdyI6MTAsIm5jb2wiOjN9LCJyZGYiOiJINHNJQUFBQUFBQUFBK1ZUUDI4VE1SUjNMbmRKYzZWL3BDNE1EQm1MUkxJZ29RNE12YWFpREhUaGoxU200THR6RWl1T2ZmTDVhSU1RWW1Dakg2RjBaa1RpQzdEekZkajRBREN4SURYWXZ1ZWtPUlZWWXVVazMzdnZaNysvK3IzSCswZDN3Nk1RSVZSSDlZYitCMXBGd2JPbkR6bzdDUG1lTm1ySVJ5MGpUL1QxbG4ySjBLWStJVno0RDBXTVFXLzFjRWJhejRVY0E3RFd3M3dxZUh1ZjRwZ0pBSnVSbkdDdXBtQTJEbWhNQkFjcjdJMktES2RFaWh5UTFjT0NweExIbERHWDU4WVRPaDRKUlRvUm8zUEhQWndVTVpWVXVUekJZU3h5cXBWMWM3MTdqdXkzZXpZcTVZZFRrQjhCL3dUeUorRGZTbm5Pd0w0RjlqYUN6OGFOVHM5MmpCRzkvL0xHeXRkZ3YvcHNBMFVuWDIyQzZQaU9yU0I2K2YyRmxjV1ArMWFxM3pldDVPL2VsbUdYNWg1d1BDRTV6THp1Wm01QXAwOEpsbTZVRTV6bi9XRWxSRXVLNDY0THM2YVBaeExOWnJOZjFWd0owLzZReTRGaGloWHVEcVRKdVB6Y3p6T1NMRmpoR2RrQUc5cndaeEROQTUvTlJEQkdFaVZrUHhWRnpGd1hyVG11all0cmdtd3RnaVFqTEhHaWlQeVhPUDkxTWNiZmMvNE5lT1RSOUFxS3JSaGF0YmVIdDkzZEFETjJCZjFXRDRoNEpCS3NxRjduNjR2ZFdCUTdMRWllLzZWUVM5bGFlWmFLbm0rRGRuRE96WlFNY01IVW5LSmptbFhTTy9xdWFMZCtTV0diNXFKQzc2YklUQ001TUR1b3VOZGtCZGdvdUpsWjJrbEdCUjkzN3BuZGdjclJwUzdDUzNxOTBsSGc5cGp3SWVWdS9BSERNWEh6WHRmTGJIZTVtMG5LWForaFJ2T3VFZ3E3ZDZFWkNpRFEzeCtiZkxmYzdnVUFBQT09In0= -->
+<div data-pagedtable="false">
+<script data-pagedtable-source type="application/json">
+{"columns":[{"label":["name"],"name":[1],"type":["chr"],"align":["left"]},{"label":["year"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["mass_g"],"name":[3],"type":["dbl"],"align":["right"]}],"data":[{"1":"Hoba","2":"1920","3":"60000000"},{"1":"Cape York","2":"1818","3":"58200000"},{"1":"Canyon Diablo","2":"1891","3":"30000000"},{"1":"Armanty","2":"1898","3":"28000000"},{"1":"Gibeon","2":"1836","3":"26000000"},{"1":"Chupaderos","2":"1852","3":"24300000"},{"1":"Mundrabilla","2":"1911","3":"24000000"},{"1":"Sikhote-Alin","2":"1947","3":"23000000"},{"1":"Bacubirito","2":"1863","3":"22000000"},{"1":"Mbosi","2":"1930","3":"16000000"}],"options":{"columns":{"min":{},"max":[10],"total":[3]},"rows":{"min":[10],"max":[10],"total":[10]},"pages":{}}}
+  </script>
+</div>
+<!-- rnb-frame-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubWV0ZW9yaXRlcyAlPiUgXG4gIGdyb3VwX2J5KGZhbGwpICU+JSBcbiAgc3VtbWFyaXNlKGF2Z193ZWlnaHQgPSBtZWFuKG1hc3NfZykpXG5gYGAifQ== -->
+<pre class="r"><code>meteorites %&gt;% 
+  group_by(fall) %&gt;% 
+  summarise(avg_weight = mean(mass_g))</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiYHN1bW1hcmlzZSgpYCB1bmdyb3VwaW5nIG91dHB1dCAob3ZlcnJpZGUgd2l0aCBgLmdyb3Vwc2AgYXJndW1lbnQpXG4ifQ== -->
+<pre><code>`summarise()` ungrouping output (override with `.groups` argument)</code></pre>
 <!-- rnb-output-end -->
+<!-- rnb-frame-begin eyJtZXRhZGF0YSI6eyJjbGFzc2VzIjpbInRibF9kZiIsInRibCIsImRhdGEuZnJhbWUiXSwibnJvdyI6MiwibmNvbCI6Mn0sInJkZiI6Ikg0c0lBQUFBQUFBQUF3dHlpVERtaXVCaVlHQmdabUJtQTVLc1FDWURhMmlJbTY0RkF3TUxFNUREeU1EQ3dBbWlLNERTd2tBR1NGQUFURU1rV054U2MzS2diRmEzL05LOEZDQ0RENlRBNGNNY3J0aVROdzQ0TXJqN0swdWRmb2RtSW10ZVltNXFNYnBwYVlsdzA3Z1N5OUxqeTFNejB6TkswTFJ5RnVXWDY4RzA4NEswTndDSi8vLy8vME8zSXprbnNSaG1CMHlRS3lXeEpGRXZyUWlvSDhoRDE4S2VYMUNTbVo4SDFNUUU4aTRybW1iR0lqUUIvdEk4a0V0U2RKTXpTdk95ZGMxQkZvQ2xJWUFYeW1aQ1pZT3NaUG9QTllvVmFoUmJhbDU2Wmw0cXpPMDVpVW1wc0xEZ0Evb1k3R0c5Z3FMTXZCS1lUNENpeFhvbCtTV0o4REJMenMrQmlZRDl4dkFQQUM3b0NnTGxBUUFBIn0= -->
+<div data-pagedtable="false">
+<script data-pagedtable-source type="application/json">
+{"columns":[{"label":["fall"],"name":[1],"type":["chr"],"align":["left"]},{"label":["avg_weight"],"name":[2],"type":["dbl"],"align":["right"]}],"data":[{"1":"Fell","2":"68032.65"},{"1":"Found","2":"133353.89"}],"options":{"columns":{"min":{},"max":[10],"total":[2]},"rows":{"min":[10],"max":[10],"total":[2]},"pages":{}}}
+  </script>
+</div>
+<!-- rnb-frame-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubWV0ZW9yaXRlcyAlPiUgXG4gIGZpbHRlcih5ZWFyID49IDIwMDApICU+JSBcbiAgZ3JvdXBfYnkoeWVhcikgJT4lIFxuICBzdW1tYXJpc2UobigpKVxuYGBgIn0= -->
+<pre class="r"><code>meteorites %&gt;% 
+  filter(year &gt;= 2000) %&gt;% 
+  group_by(year) %&gt;% 
+  summarise(n())</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiYHN1bW1hcmlzZSgpYCB1bmdyb3VwaW5nIG91dHB1dCAob3ZlcnJpZGUgd2l0aCBgLmdyb3Vwc2AgYXJndW1lbnQpXG4ifQ== -->
+<pre><code>`summarise()` ungrouping output (override with `.groups` argument)</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-frame-begin eyJtZXRhZGF0YSI6eyJjbGFzc2VzIjpbInRibF9kZiIsInRibCIsImRhdGEuZnJhbWUiXSwibnJvdyI6MTQsIm5jb2wiOjJ9LCJyZGYiOiJINHNJQUFBQUFBQUFBMTJRejByRFFCREdKLzhxRFZnS3ZvUWVFaWdpZU15aHFBY1BJaFVpZUhCTllodU1tNUJzMGQ1OEFTKytRSSsrZzYvZ3llZnc1Z00wZnB2T0ltYmgyOS9zN003c3pGeE80ME0vOW9uSUlXZUEzWU5KM3RYc0pEZ21jbTBjTEhKcHFQbU02ejBZMmpuU2l0YVJmazNSZXNvOFk1NHpMNWd6WnN5OFlkNHlVK2FDV1RBcnBpSmV1L3ozTi9RQmZVSmYwQ3YwQnIxRHA1Qk9QSWV1b1JWMHRLMzdYME9lRkk5WkEyUGNYVzZkN2lvVE5kdU8zRC9veFF6cjhpazBjYm9ZK3dWYjI3WS8vZVJKSVJxVDNEajlWQ2dSM3RlSXgyblRDOWtwSzVXWEVrRzJIclBYQzdicW5tTzhsTHFTTkVnV1Mva1FUQ2I2aCs3K2IxWVd6OHZZUEFPNzVWd2U1eHBrY3A3THpCUmZpTHVzNE1NSUxYY2RoMVdkUzJWYWdiY0pWYW1FZWVjblpXRThYWE8wK1FXV1ZEY1VYZ0lBQUE9PSJ9 -->
+<div data-pagedtable="false">
+<script data-pagedtable-source type="application/json">
+{"columns":[{"label":["year"],"name":[1],"type":["dbl"],"align":["right"]},{"label":["n()"],"name":[2],"type":["int"],"align":["right"]}],"data":[{"1":"2000","2":"235"},{"1":"2001","2":"186"},{"1":"2002","2":"203"},{"1":"2003","2":"209"},{"1":"2004","2":"141"},{"1":"2005","2":"146"},{"1":"2006","2":"167"},{"1":"2007","2":"71"},{"1":"2008","2":"96"},{"1":"2009","2":"103"},{"1":"2010","2":"89"},{"1":"2011","2":"121"},{"1":"2012","2":"53"},{"1":"2013","2":"2"}],"options":{"columns":{"min":{},"max":[10],"total":[2]},"rows":{"min":[10],"max":[10],"total":[14]},"pages":{}}}
+  </script>
+</div>
+<!-- rnb-frame-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 <!-- rnb-text-end -->
 
-<div id="rmd-source-code">LS0tCnRpdGxlOiAiUiBOb3RlYm9vayIKb3V0cHV0OiBodG1sX25vdGVib29rCi0tLQoKUTEuIEZpbmQgdGhlIHdlYXRoZXIgZm9yZWNhc3QgZm9yIHRoZSBuZXh0IHRocmVlIGRheXMuIEVhY2ggbGlzdCBlbGVtZW50IHNob3VsZCBoYXZlIHRoZSBuYW1lIG9mIHRoZSBkYXkgb2YgdGhlIHdlZWsuIEluc2lkZSBlYWNoIGVsZW1lbnQgc2hvdWxkIGJlIGFub3RoZXIgbmFtZWQgbGlzdCB0aGF0IHRlbGxzIHlvdSB0aGUgdGVtcGVyYXR1cmUsIGNoYW5jZSBvZiByYWluIGFuZCB3aW5kIHNwZWVkLgoKYGBge3J9CndlYXRoZXIgPC0gbGlzdCgKICAiVGh1cnNkYXkiID0gbGlzdCh0ZW1wID0gMTAsIGNoYW5jZV9yYWluID0gMC43OSwgd2luZF9zcGVlZCA9IDE0KSwgCiAgIkZyaWRheSIgPSBsaXN0KHRlbXAgPSAxNCwgY2hhbmNlX3JhaW4gPSAwLjcyLCB3aW5kX3NwZWVkID0gMTMpLAogICJTYXR1cmRheSIgPSBsaXN0KHRlbnAgPSAxMywgY2hhbmNlX3JhaW4gPSAwLjU0LCB3aW5kX3NwZWVkID0gMTQpCikKYGBgCgpRMi4gVXNpbmcgdGhlIGxpc3QgeW914oCZdmUganVzdCBtYWRlIGZpbmQ6CgotVGhlIGNoYW5jZSBvZiByYWluIHRvbW9ycm93Ci1UaGUgd2luZCBzcGVlZCBvbiB0aGUgZGF5IGFmdGVyIHRvbW9ycm93Ci1UaGUgdGVtcGVyYXR1cmUgdG9tb3Jyb3cuCmBgYHtyfQp3ZWF0aGVyJFRodXJzZGF5JGNoYW5jZV9yYWluCgp3ZWF0aGVyJEZyaWRheSR3aW5kX3NwZWVkCgp3ZWF0aGVyJFRodXJzZGF5JHRlbXAKYGBgCgoxLjMuMQpGaW5kIGEgMTQgZGF5IGZvcmVjYXN0IGFuZCBjcmVhdGUgYSBtYXRyaXggb2YgdGhlIGZvcmVjYXN0cyBmb3IgdGVtcGVyYXR1cmUsIHdoZXJlIGVhY2ggd2VlayBpcyBvbmUgcm93LgpZb3Ugd2lsbCB3YW50IHRvIGdpdmUgYSBuYW1lIHRvIHRoZSBtYXRyaXggeW91IGNyZWF0ZS4KCmBgYHtyfQpkYXRlc193azEgPC0gbGlzdCgyOSwgMzAsIDMxLCAxLCAyLCAzLCA0KQpkYXRlc193azIgPC0gbGlzdCg1LCA2LCA3LCA4LCA5LCAxMCwgMTEpCgoKd2VhdGhlcl9tYXRyaXggPC0gbWF0cml4KGMoMTAsMTMsMTQsMTMsMTEsMTAsOSwxMCwxMSwxMSwxMCw5LDksOCksIAogICAgICAgICAgICAgICAgICAgICAgICAgbmNvbCA9IDcsIG5yb3cgPSAyLCBieXJvdyA9IFRSVUUpIAogICAgICAgICAgICAgICAgICAgICAgICAgIyA9IGxpc3QoZGF0ZXNfd2sxLCBkYXRlc193azIpKQp3ZWF0aGVyX21hdHJpeApgYGAKCjEuMy4yIE5vdyBzZWxlY3Q6CgpUaGUgdGhpcmQgZGF5IG9mIHRoZSBzZWNvbmQgd2VlawpUaGUgd2hvbGUgc2Vjb25kIHdlZWsKVGhlIGZpcnN0LCB0aGlyZCBhbmQgZmlmdGggZGF5cyBpbiBib3RoIHdlZWtzLgoKYGBge3J9CndlYXRoZXJfbWF0cml4WzIsIDNdCndlYXRoZXJfbWF0cml4WzIsXQp3ZWF0aGVyX21hdHJpeFtjKDEsIDIpLCBjKDEsIDMsIDUpXQpgYGAKCjEuNApXcml0ZSBhIGZ1bmN0aW9uIHRoYXQgcHJlLWFwcGVuZHMg4oCcVGhlIGFuc3dlciBpczrigJ0gdG8gYW55IGNoYXJhY3RlciBpbnB1dCwgYW5kIGVpdGhlciByZXR1cm5zIHRoZSBudW1iZXIgZm9yIG51bWJlcnMgbGVzcyB0aGFuIDEwLCBvciBkaXZpZGVzIHRoZSBudW1iZXIgYnkgMTAgZm9yIG51bWJlcnMgZ3JlYXRlciB0aGFuIDEwLiBGb3IgYW55dGhpbmcgZWxzZSByZXR1cm4g4oCcSW52YWxpZCBpbnB1dOKAnS4KCmBgYHtyfQpnaXZlX2Fuc3dlciA8LSBmdW5jdGlvbih4KXsKICBpZiAoaXMubnVtZXJpYyh4KSl7CiAgICBpZiAoeCA8IDEwKSB7CiAgICAgIHJldHVybihwYXN0ZSgiVGhlIGFuc3dlciBpcyIsIHgsIHNlcCA9ICIgIikpCiAgICB9IGVsc2UgewogICAgICByZXR1cm4ocGFzdGUoIlRoZSBhbnN3ZXIgaXMiLCB4IC8gMTAsIHNlcCA9ICIgIikpCiAgICB9CiAgfQogIHByaW50KCJJbnZhbGlkIGlucHV0IikKfQoKZ2l2ZV9hbnN3ZXIoKQpgYGAKCmBgYHtyfQpnaXZlX2Fuc3dlcjIgPC0gZnVuY3Rpb24oeCl7CiAgaWYgKHggIT0gMTApewogICAgaWYgKHggPCAxMCkgewogICAgICByZXR1cm4ocGFzdGUoIlRoZSBhbnN3ZXIgaXMiLCB4LCBzZXAgPSAiICIpKQogICAgfSBlbHNlIHsKICAgICAgcmV0dXJuKHBhc3RlKCJUaGUgYW5zd2VyIGlzIiwgeCAvIDEwLCBzZXAgPSAiICIpKQogICAgfQogIH0KICBwcmludCgiSW52YWxpZCBpbnB1dCIpCn0KCmdpdmVfYW5zd2VyMigxMCkKYGBgCgoKCgoKCgoKCgoxLjUKV3JpdGUgYSBmdW5jdGlvbiB3aGljaCBjaGVja3MgaWYgdHdvIHZlY3RvcnMgaGF2ZSB0aGUgc2FtZSBlbGVtZW50cy4KCklmIHRoZXkgaGF2ZSB0aGUgc2FtZSBlbGVtZW50cyBpbiB0aGUgc2FtZSBvcmRlciwgcmV0dXJuIOKAnEV4YWN0bHkgdGhlIHNhbWXigJ0KCklmIHRoZXkgaGF2ZSB0aGUgc2FtZSBlbGVtZW50cyBidXQgaW4gYSBkaWZmZXJlbnQgb3JkZXIsIHJldHVybiDigJxUaGUgc2FtZeKAnQoKSWYgdGhleSBkb27igJl0IGhhdmUgdGhlIHNhbWUgZWxlbWVudHMsIHJldHVybiDigJxEaWZmZXJlbnTigJ0uCgpgYGB7cn0KY2hlY2tfdmVjdG9ycyA8LSBmdW5jdGlvbih4LCB5KXsKICAKICBmb3IgKGkgaW4gMTpsZW5ndGgoeCkpewogICAgCiAgICBpZiAoeFtpXSAhPSB5W2ldKXsKICAgICAgeCA8LSBzb3J0KHgpCiAgICAgIHkgPC0gc29ydCh5KQogICAgICBmb3IgKGogaW4gMTpsZW5ndGgoeCkpewogICAgICAgIAogICAgICAgIGlmICh4W2pdICE9IHlbal0pewogICAgICAgICAgcmV0dXJuKHByaW50KCJEaWZmZXJlbnQiKSkKICAgICAgICB9CiAgICAgICAgCiAgICAgIH0KICAgICAgcmV0dXJuKHByaW50KCJUaGUgc2FtZSIpKQogICAgfQogIAogICAgCiAgfQogIHJldHVybihwcmludCgiRXhhY3RseSB0aGUgc2FtZSIpKQp9CgphIDwtIGMoMSwgNSwgMTApCmIgPC0gYygxMCwgMSwgNSkKYyA8LSBjKDEsIDUsIDEwKQoKY2hlY2tfdmVjdG9ycyhhLGIpCgoKCgoKYGBgCgoKCgoKCgoKCgoKCgoKCg==</div>
+<div id="rmd-source-code">LS0tCnRpdGxlOiAiUiBOb3RlYm9vayIKb3V0cHV0OiBodG1sX25vdGVib29rCi0tLQoKYGBge3J9CnNvdXJjZSgid2Vla2VuZF9ob21ld29yay5SIikKYGBgCgpgYGB7cn0KbWV0ZW9yaXRlcyAlPiUgCiAgc3VtbWFyaXNlKGFjcm9zcyguZm5zID0gfiBzdW0oaXMubmEoLngpKSkpCmBgYAoKCmBgYHtyfQptZXRlb3JpdGVzICU+JSAKICBkcm9wX25hKHllYXIpICU+JSAKICBzbGljZV9tYXgobWFzc19nLCBuID0gMTApICU+JSAKICBzZWxlY3QobmFtZSwgeWVhciwgbWFzc19nKQpgYGAKCmBgYHtyfQptZXRlb3JpdGVzICU+JSAKICBncm91cF9ieShmYWxsKSAlPiUgCiAgc3VtbWFyaXNlKGF2Z193ZWlnaHQgPSBtZWFuKG1hc3NfZykpCmBgYAoKYGBge3J9Cm1ldGVvcml0ZXMgJT4lIAogIGZpbHRlcih5ZWFyID49IDIwMDApICU+JSAKICBncm91cF9ieSh5ZWFyKSAlPiUgCiAgc3VtbWFyaXNlKG4oKSkKYGBgCgoKCgoK</div>
 
 
 
@@ -1972,7 +1885,7 @@ $(document).ready(function () {
 <!-- code folding -->
 <script>
 $(document).ready(function () {
-  window.initializeSourceEmbed("day_3_homework.Rmd");
+  window.initializeSourceEmbed("main_script_meteorites.Rmd");
   window.initializeCodeFolding("show" === "show");
 });
 </script>

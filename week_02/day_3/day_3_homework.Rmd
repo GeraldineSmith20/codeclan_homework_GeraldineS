@@ -68,7 +68,7 @@ give_answer <- function(x){
   print("Invalid input")
 }
 
-give_answer(10)
+give_answer()
 ```
 
 ```{r}
@@ -83,7 +83,7 @@ give_answer2 <- function(x){
   print("Invalid input")
 }
 
-give_answer2(11)
+give_answer2(10)
 ```
 
 
