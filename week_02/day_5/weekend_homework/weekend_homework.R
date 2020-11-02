@@ -19,5 +19,6 @@ verify(meteorites, longitude >= -180 & latitude <= 180)
 meteorites <- meteorites %>% filter(mass_g >= 1000)
 meteorites <- meteorites %>% arrange(desc(year))
 
+#### should create an output - write_csv(meteorites, "data/clean_data/meteorites_clean")
 
 
