@@ -54,14 +54,14 @@ ORDER BY last_name ASC NULLS LAST;
 SELECT 
 	COUNT(id) AS num_employees
 FROM employees 
-WHERE first_name = 'F%';
+WHERE first_name ILIKE 'F%';
 
 -- Count the number of pension enrolled employees not based in either France or Germany.
 
 SELECT 
 	COUNT(id) AS num_employees
 FROM employees 
-WHERE country NOT IN ('France', 'Germany');
+WHERE pension_enrol IS TRUE AND country NOT IN ('France', 'Germany');
 
 
 -- Obtain a count by department of the employees who started work with the corporation in 2003.
@@ -84,8 +84,8 @@ SELECT
 	count(id) as num_employees
 FROM employees
 GROUP BY department, fte_hours
-ORDER BY department ASC,
-		 fte_hours ASC; 
+ORDER BY department ASC NULLS LAST,
+		 fte_hours ASC NULLS LAST; 
 
 		
 -- Obtain a table showing any departments in which there are two or more employees lacking 
@@ -98,6 +98,7 @@ SELECT
 FROM employees
 WHERE first_name IS NULL
 GROUP BY department
+HAVING COUNT(id) >= 2
 ORDER BY num_employees_no_first_name DESC,
 		 department ASC;
 
@@ -105,15 +106,10 @@ ORDER BY num_employees_no_first_name DESC,
 
 SELECT 
 	department,
-	SUM(CAST(grade = 1 AS INTEGER))/COUNT(id) AS grade_1_proportion
+	SUM(CAST(grade = 1 AS INT)) / CAST(COUNT(id) AS REAL) AS prop_grade_1
 FROM employees
 GROUP BY department;
 	
-SELECT 
-	department,
-	COUNT(id)
-FROM employees 
-GROUP BY department;
 	
 
 
