@@ -30,7 +30,7 @@ SELECT
 FROM employees AS e LEFT JOIN teams AS t
 ON t.id = e.team_id
 WHERE CAST(charge_cost AS INT) > 80
-ORDER BY e.last_name DESC;
+ORDER BY e.last_name ASC;
 
 
 
@@ -43,7 +43,7 @@ SELECT
 FROM employees AS e LEFT JOIN teams AS t
 ON t.id = e.team_id
 GROUP BY team_name
-ORDER BY COUNT(e.id) DESC;
+ORDER BY COUNT(e.id) ASC;
 
 
 --Q5 The effective_salary of an employee is defined as their fte_hours multiplied by their salary. 
@@ -57,7 +57,7 @@ SELECT
 	fte_hours,
 	salary,
 	(fte_hours * salary) AS effective_salary,
-	SUM(effective_salary) OVER (ORDER BY effective_salary ASC NULLS LAST) AS running_tot_salary
+	SUM(fte_hours * salary) OVER (ORDER BY fte_hours * salary ASC NULLS LAST) AS running_tot_salary
 FROM employees;
 
 
@@ -67,20 +67,20 @@ FROM employees;
 SELECT 
 	t.name AS team_name,
 	COUNT(e.id) * CAST(charge_cost AS INT) AS day_charge
-FROM employees AS e LEFT JOIN teams AS t
-ON t.id = e.team_id
-GROUP BY t.name, t.charge_cost
+FROM employees AS e INNER JOIN teams AS t
+ON e.team_id = t.id 
+GROUP BY t.id;
 
-SELECT 
-	t.name AS team_name,
-	COUNT(e.id) * CAST(charge_cost AS INT) OVER (PARTITION BY t.name) AS day_charge
-FROM employees AS e LEFT JOIN teams AS t
-ON t.id = e.team_id;
 
 
 --Q7 How would you amend your query from question 6 above to show only those teams with a total_day_charge greater than 5000?
-
-WHERE day_charge > 5000
+SELECT 
+	t.name AS team_name,
+	COUNT(e.id) * CAST(charge_cost AS INT) AS day_charge
+FROM employees AS e LEFT JOIN teams AS t
+ON t.id = e.team_id
+GROUP BY t.name, t.charge_cost
+HAVING COUNT(e.id) * CAST(t.charge_cost AS INT) > 5000;
 
 
 
