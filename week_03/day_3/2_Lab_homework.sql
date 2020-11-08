@@ -114,6 +114,28 @@ ORDER BY expected_profit DESC NULLS LAST;
 -- Add two extra columns showing the ratio of each employee’s salary to that department’s average salary,
 -- and each employee’s fte_hours to that department’s average fte_hours.
 
+--Option 1
+
+SELECT 
+	id, 
+	first_name, 
+	last_name, 
+	salary,
+	fte_hours,
+	department,
+	salary/AVG(salary) OVER () AS ratio_avg_salary,
+	fte_hours/AVG(fte_hours) OVER () AS ratio_fte_hours
+FROM employees
+WHERE department = (
+	SELECT
+	department
+FROM employees 
+GROUP BY department
+ORDER BY COUNT(id) DESC
+LIMIT 1);
+
+--Option 2
+
 WITH legal_avgs(department, avg_salary, avg_fte) AS (
 SELECT
 	department,
@@ -136,6 +158,26 @@ LIMIT 1
 	fte_hours / legal_avgs.avg_fte AS fte_ratio
 FROM employees AS e CROSS JOIN legal_avgs
 WHERE e.department = legal_avgs.department;
+
+--Option 3
+
+WITH biggest_dept(name, avg_salary, avg_fte_hours) AS (
+	SELECT
+		department,
+		AVG(salary),
+		AVG(fte_hours)
+	FROM employees 
+	GROUP BY department
+	ORDER BY COUNT(id) DESC NULLS LAST
+	LIMIT 1
+)
+SELECT 
+	*
+FROM employees AS e
+INNER JOIN biggest_dept AS db
+ON e.department = db.name; 
+
+
 
 --Extension Q1
 --Return a table of those employee first_names shared by more than one employee,
@@ -172,9 +214,11 @@ SELECT
  CASE
 	WHEN pension_enrol IS NULL THEN 'Unknown'
 	WHEN pension_enrol IS TRUE THEN 'Pensioned'
-	WHEN pension_enrol IS FALSE THEN 'Unpensioned'
- END actual_pension_enrol
-FROM employees;
+	ELSE  'Unpensioned'
+ END AS actual_pension_enrol
+ COUNT(id) AS num_employees
+FROM employees
+GROUP BY pension_enrol;
 
 
 --Q3 Find the first name, last name, email address and start date of all the employees who are
@@ -214,8 +258,8 @@ FROM employees)
 SELECT
 	COUNT(DISTINCT(e.id)) as num_employees,
 	s.salary_class
-FROM (employees AS e LEFT JOIN salary_classification AS s
-      ON e.id = s.id) RIGHT JOIN employees_committees AS ec
+FROM (employees AS e INNER JOIN salary_classification AS s
+      ON e.id = s.id) INNER JOIN employees_committees AS ec
       ON e.id = ec.employee_id
 GROUP BY s.salary_class
 ;
