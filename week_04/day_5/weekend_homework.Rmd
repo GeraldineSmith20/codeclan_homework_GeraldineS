@@ -1,0 +1,237 @@
+---
+title: "Week 4 Weekend Homework"
+output: html_notebook
+---
+```{r}
+library(tidyverse)
+library(janitor)
+```
+
+```{r}
+salaries <- read_csv("data/salaries.csv")
+```
+
+Q1. Use select to see the beginning salary variable and the current salary variable.
+```{r}
+salaries %>% 
+  select(beginning_salary, current_salary)
+```
+
+Q2. Use filter to see the employees aged over 50, who have a salary over £20,000.
+```{r}
+salaries %>% 
+  filter(age > 50,
+         current_salary > 20000)
+```
+
+Q3. Use arrange to order by the data so that the highest salaries are first.
+```{r}
+salaries %>% 
+  arrange(desc(current_salary))
+```
+
+Q4. Use mutate to make a new variables beginning_salary_pence and current_salary_pence. These should have the corresponding salaries in pence instead of pounds.
+```{r}
+salaries_with_pennies <- salaries %>% 
+  mutate(beginning_salary_pence = beginning_salary * 100,
+         current_salary_pence = current_salary * 100)
+salaries_with_pennies
+```
+
+Q5. Use summarise to find the maximum age and the minimum age.
+```{r}
+salaries %>% 
+  summarise(max(age))
+
+salaries %>% 
+  summarise(min(age))
+
+```
+
+Q6. Find the minimum salary and the maximum salary.
+```{r}
+salaries %>% 
+  summarise(max(current_salary))
+
+salaries %>% 
+  summarise(min(current_salary))
+```
+
+Q7. Find all employees aged under 30
+```{r}
+salaries %>% 
+  filter(age < 30)
+```
+
+Q8. Order the data in terms of increasing educational level where ties are broken using age.
+```{r}
+salaries %>% 
+  arrange(educational_level, age)
+```
+Q9. Drop all the non-numeric variables in the tibble.
+```{r}
+salaries %>% 
+  select_if(is.numeric)
+```
+
+Q10. Find all employees with either less than 2 years work experience or an education level below 12.
+```{r}
+salaries %>% 
+  filter(work_experience < 2 | educational_level < 12)
+```
+
+Q11. Transform the salary variables so they measure how many 1000s of pounds each salary is.
+```{r}
+salaries %>% 
+  mutate(current_salaries_k = current_salary / 1000,
+         beginning_salary_k = beginning_salary / 1000)
+```
+
+Q12. Find all the females employees with an employment category of ‘security officer’.
+```{r}
+salaries %>% 
+  filter(gender == "female",
+         employment_category == "security officer" )
+```
+
+Q13. Find the average salary across each employment category.
+```{r}
+salaries %>% 
+  group_by(employment_category) %>% 
+  summarise(avg_salary = mean(current_salary))
+```
+
+Q14. What is the average salary across each employment category for just the males?
+```{r}
+salaries %>% 
+  filter(gender == "male") %>% 
+  group_by(employment_category) %>% 
+  summarise(avg_salary = mean(current_salary))
+```
+
+Q15. Find the number of white females, white males, non-white females and non-white males.
+```{r}
+salaries %>% 
+  group_by(gender, is_white) %>% 
+  summarise(n())
+```
+
+Q16. What is happens when we use summary statistics like mean with mutate? mutate(df, mean_age = mean(current_salary)) You may need to use View to see the whole data. Now use group_by with mutate and mean. What do you see?
+```{r}
+salaries %>% 
+  mutate(mean_salary = mean(current_salary))
+```
+```{r}
+salaries %>% 
+  group_by(educational_level) %>% 
+  mutate(mean_salary = mean(current_salary))
+```
+The value stays the same across the whole data set if you do not group by any other variable.
+
+2 PIPES=========================================================================
+
+Q1. Find the average salary per educational level, for educational levels of 16 and below. Arrange the results from highest salary to lowest. Answer using pipes.
+
+```{r}
+salaries %>% 
+  filter(educational_level <= 16) %>% 
+  group_by(educational_level) %>% 
+  summarise(avg_salary = mean(current_salary)) %>% 
+  arrange(desc(avg_salary))
+```
+
+Q2. Find the average salary for each gender in each employment category. Exclude any employees with less than 2 years of work experience. Answer using pipes.
+```{r}
+salaries %>% 
+filter(work_experience < 2) %>% 
+group_by(gender, employment_category) %>% 
+summarise(avg_salary = mean(current_salary))
+```
+
+Q3.For each employment category find the difference between the mean salary and the median salary. Arrange so that the greatest difference comes first. Answer using pipes.
+```{r}
+salaries %>% 
+  group_by(employment_category) %>% 
+  summarise(dif = mean(current_salary) - median(current_salary))
+```
+
+MISSING VALUES =================================================================
+
+```{r}
+beerz <- read_delim("data/beer.txt", delim = ";")
+```
+
+Q1. Find all the observations where the carbohydrates are missing.
+```{r}
+beerz %>% 
+  filter(is.na(carbohydrates) | carbohydrates == "*")
+```
+
+Q2. Find all the observations where the brand is missing.
+```{r}
+beerz %>% 
+  filter(is.na(brand))
+```
+
+Q3. What is different about the observations missing carbohydrates and the observations missing brand? To clean the data should be drop the rows missing brand or the rows missing carbohydrates?
+
+Missing brand also has the majority of other variables as missing, so it would be better to drop na for brand.
+
+RECODING========================================================================
+
+```{r}
+inmates <- read_tsv("data/inmates.tsv")
+```
+
+Q1. Change the ‘M’/‘F’ values in gender to be ‘Male’/‘Female’.
+
+```{r}
+inmates %>% 
+  mutate(
+    gender = if_else(gender == "M", "Male", "Female")
+  )
+```
+Q2. For the race variable, everything is in capital letters, change each level to title case. Also combine ‘AMER IND’ and ‘ASIAN’ into an ‘Other’ category.
+```{r}
+inmates %>% 
+  mutate(race = str_to_title(race)) %>% 
+  mutate(
+    race = case_when(
+      race == "Asian" ~ "Other",
+      race == "Amer Ind" ~ "Other",
+      TRUE ~ race
+    )
+  )
+```
+
+Q3a. Make a new variable bond_level which is High whenever the bond for an inmate is above $1,000,000 and Normal otherwise.
+```{r}
+inmates_with_bond <- inmates %>% 
+  mutate(bond_level = if_else(bond_amount > 1000000, "High", "Normal"))
+
+inmates_with_bond
+```
+
+Q3b. How many inmates have a high bond level?
+```{r}
+inmates_with_bond %>% 
+  filter(bond_level == "High") %>% 
+  nrow()
+```
+
+Q4. Modify the detainer variable so that NONE, IMIGRATION and FEDERAL are in title case and all other levels are set to Other.
+```{r}
+inmates_with_bond %>% 
+  mutate(detainer = str_to_title(detainer)) %>% 
+  mutate(
+    detainer = case_when(
+      detainer == "None" ~ "None",
+      detainer == "Immigration" ~ "Immigration",
+      detainer == "Federal" ~ "Federal",
+      TRUE ~ "Other"
+    )
+  )
+```
+
+
+
