@@ -41,20 +41,14 @@ salaries_with_pennies
 Q5. Use summarise to find the maximum age and the minimum age.
 ```{r}
 salaries %>% 
-  summarise(max(age))
-
-salaries %>% 
-  summarise(min(age))
+  summarise(max(age), min(age))
 
 ```
 
 Q6. Find the minimum salary and the maximum salary.
 ```{r}
 salaries %>% 
-  summarise(max(current_salary))
-
-salaries %>% 
-  summarise(min(current_salary))
+  summarise(max(current_salary), min(current_salary))
 ```
 
 Q7. Find all employees aged under 30

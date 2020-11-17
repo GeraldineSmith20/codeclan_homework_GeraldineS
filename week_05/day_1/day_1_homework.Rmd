@@ -1,0 +1,104 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+```{r}
+library(tidyverse)
+library(CodeClanData)
+```
+
+Question 1:
+```{r}
+colnames(backpack)
+glimpse(backpack)
+```
+
+Question 2 - What is the distribution of backpack weights that students are carrying? Choose an appropriate graph to show the distribution.
+```{r}
+ggplot(backpack) +
+  aes(x = backpack_weight) +
+  geom_histogram(col = "white") +
+  labs(y = "No. of Students",
+       x = "Backpack Weight")
+```
+
+
+Question 3 - Are there differences in backpack weight between sex?
+```{r}
+ggplot(backpack) +
+  aes(x = backpack_weight, fill = sex) +
+  geom_histogram(col = "white") +
+  labs(y = "No. of Students",
+       x = "Backpack Weight") +
+  facet_wrap(~ sex, ncol = 1)
+```
+As can be seen from above charts, there is no great difference in the distribution of backpack weights when comparing male versus female.
+
+Question 4 - What is the relationship between body weight and backpack weight?
+```{r}
+ggplot(backpack) +
+  aes(x = body_weight, y = backpack_weight) +
+  geom_point(position = "jitter") +
+  labs(
+    x = "Body Weight",
+    y = "Backpack Weight",
+    title = "Body Weight versus Backpack Weight"
+  )
+```
+A weak positive relationship with body weight and backpack weight.
+
+Question 5 - Is this relationship different between men and women? Choose an appropriate plot and interpret your findings.
+
+```{r}
+ggplot(backpack) +
+  aes(x = body_weight, y = backpack_weight, colour = sex) +
+  geom_point(position = "jitter") +
+  labs(
+    x = "Body Weight",
+    y = "Backpack Weight",
+    title = "Body Weight versus Backpack Weight"
+  )+ facet_wrap( ~ sex, ncol = 1)
+```
+Strength of relationship looks slightly more positive for women.  There is also a difference in the range of bodyweights in women versus men (women have more data points in the lighter bodyweight range).
+
+Question 6 - What proportion of students report back pain?
+```{r}
+library(scales)
+
+ggplot(backpain, aes(x = factor(back_problems))) +
+  geom_bar(aes(y = (..count..)/sum(..count..))) +
+  scale_y_continuous(labels = percent) +
+  labs(y = "% Students",
+       x = "Reported Back Problems")
+```
+
+Question 7 - Is this proportion different between men and women?
+```{r}
+ggplot(backpain, aes(x = factor(back_problems)), position = "fill") +
+  geom_bar(aes(y = (..count..)/sum(..count..), fill = sex)) +
+  scale_y_continuous(labels = percent) +
+  labs(y = "% Students",
+       x = "Reported Back Problems")
+```
+
+Question 8 - Now you’ve investigated your data separately, create plots to describe the relationship between backpack weight, body weight, gender and reported backpain.
+
+```{r}
+ggplot(backpack, aes(x = factor(back_problems)), position = "fill") +
+  geom_bar(aes(y = (..count..)/sum(..count..), fill = sex)) +
+  scale_y_continuous(labels = percent) +
+  labs(y = "% Students",
+       x = "Reported Back Problems") +
+  facet_grid(~ body_weight, back_problems)
+```
+
+
+
+
+
+
+
+
+
+
