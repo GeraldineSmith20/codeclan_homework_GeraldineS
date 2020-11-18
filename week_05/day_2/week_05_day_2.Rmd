@@ -1,0 +1,77 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+```{r}
+library(tidyverse)
+library(CodeClanData)
+col_scheme <- c("#E89FE9", "#50434F", "#B6A7B5", "#F9A472", "#BD7040")
+```
+
+```{r}
+qb_revenue_breakdown
+```
+
+
+1. Take the data in the dataset qb_revenue_breakdown and make a stacked bar chart showing the sources of revenue across the two years in the dataset.
+
+```{r}
+ggplot(qb_revenue_breakdown) +
+  aes(x = Year, y = Revenue, fill = Product) +
+  geom_col()
+```
+
+Q2. Make a line chart showing monthly sales of the “flagship product” - the KwikBit Unit1 - over the last year. This data is inside qb_monthly_sales, but you will need to use subset.
+```{r}
+qb_monthly_sales_kwikbit <- qb_monthly_sales %>% 
+  filter(Cashflow == "Kwikbit Unit 1 Sales")
+ggplot(qb_monthly_sales_kwikbit)  +
+  aes(x = Date, y = Amount) +
+  geom_line()
+```
+
+
+Q3. Make a line chart showing monthly revenue and costs over the last year. This data is also in qb_monthly_sales.
+```{r}
+ggplot(qb_monthly_sales) +
+  aes(x = Date, y = Amount, colour = Cashflow) +
+  geom_line(data = subset(qb_monthly_sales, Cashflow %in% c("Total Revenue", "Cost")))
+```
+
+Q4. Show annual sales of personal fitness trackers over the last 5 years broken down by company as a ribbon plot (use geom_area). This data is in qb_competitors.
+```{r}
+ggplot(qb_competitors) +
+  aes(x = Year, y = Revenue, fill = Company) +
+  geom_area()
+```
+
+Q5. Now show the sales from the 5 competitors as a line graph. Include an extra layer that shows the data points used to make the lines.
+
+```{r}
+ggplot(qb_competitors) +
+  aes(x = Year, y = Revenue / 1000000, colour = Company) +
+  geom_line() +
+  geom_point() +
+  labs(y = "Revenue (millions)")
+```
+
+Q6. Now the company wants to compare the number of steps that their device counts vs. their competitors. Make a line graph of the number of steps throughout time, and use faceting to compare between individuals and people. Data is in qb_device_data.
+
+```{r}
+qb_device_data_times <- qb_device_data %>% 
+  mutate(time = (hours * 60)+ mins)
+ggplot(qb_device_data_times) +
+  aes(x = time, y = counts, colour = device) +
+  geom_line() +
+  facet_wrap(~ id)
+```
+
+
+
+
+
+
+
+
+

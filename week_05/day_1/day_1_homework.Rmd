@@ -85,12 +85,21 @@ ggplot(backpain, aes(x = factor(back_problems)), position = "fill") +
 Question 8 - Now you’ve investigated your data separately, create plots to describe the relationship between backpack weight, body weight, gender and reported backpain.
 
 ```{r}
-ggplot(backpack, aes(x = factor(back_problems)), position = "fill") +
-  geom_bar(aes(y = (..count..)/sum(..count..), fill = sex)) +
-  scale_y_continuous(labels = percent) +
-  labs(y = "% Students",
-       x = "Reported Back Problems") +
-  facet_grid(~ body_weight, back_problems)
+pain_labels <- c("backpain: no", "backpain: yes")
+names(pain_labels) <- c("No", "Yes")
+
+sex_labels <- c("sex: female", "sex: male")
+names(sex_labels) <- c("Female", "Male")
+
+
+ggplot(backpack) + 
+  aes(x = body_weight, y = backpack_weight, color = backpain_labelled) + 
+  geom_point() + 
+  facet_grid(sex ~ backpain_labelled, 
+             labeller = labeller(backpain_labelled = pain_labels, sex = sex_labels)) + 
+  labs(x = "\n body weight", y = "backpack weight \n") +
+      scale_color_manual(values=c('#f0ca41', '#5022bd'))+
+theme(legend.position = "none")
 ```
 
 
