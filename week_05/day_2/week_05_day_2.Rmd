@@ -29,6 +29,8 @@ qb_monthly_sales_kwikbit <- qb_monthly_sales %>%
 ggplot(qb_monthly_sales_kwikbit)  +
   aes(x = Date, y = Amount) +
   geom_line()
+
+#kwikbit_sales <- subset(qb_monthly_sales, Cashflow == "Kwikbit Unit 1 Sales")
 ```
 
 
@@ -64,7 +66,7 @@ qb_device_data_times <- qb_device_data %>%
 ggplot(qb_device_data_times) +
   aes(x = time, y = counts, colour = device) +
   geom_line() +
-  facet_wrap(~ id)
+  facet_grid(device ~ id)
 ```
 
 
