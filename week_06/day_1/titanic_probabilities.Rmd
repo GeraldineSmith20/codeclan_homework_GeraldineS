@@ -1,0 +1,162 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+```{r}
+library(tidyverse)
+library(gtools)
+library(prob)
+library(janitor)
+
+titanic_data <- read_csv("data/titanic.csv")
+```
+
+```{r}
+titanic_data %>% 
+  distinct(class)
+```
+```{r}
+titanic_data <- titanic_data %>% 
+  mutate(is_passenger = str_detect(class, "[0-9][a-z]{2}")) %>% 
+  select(survived, is_passenger)
+```
+
+```{r}
+table <- titanic_data %>%
+  tabyl(survived, is_passenger)
+table <- table %>%
+  adorn_totals(where = c("row", "col")) %>%
+  adorn_percentages(denominator = "all") %>%
+  adorn_title()
+table
+```
+
+prob( survived ∣ crew )
+
+```{r}
+prob_survived_crew <- titanic_data %>% 
+  dplyr::filter(survived == "yes", is_passenger == FALSE) %>% 
+  summarise(prob = n() / nrow(titanic_data))
+
+prob_survived_crew
+```
+
+prob( survived ∣ passenger )
+
+```{r}
+prob_survived_passenger <- titanic_data %>% 
+  dplyr::filter(survived == "yes", is_passenger == TRUE) %>% 
+  summarise(prob = n() / nrow(titanic_data))
+
+prob_survived_passenger
+```
+
+2 MVP
+
+1. If I roll a six-sided dice once, what is the probability of getting a number less than 5?
+=============================================================================================
+
+no. outcomes = 1,2,3,4 = 4
+no possible outcomes = 6
+probability = 4/6 = 0.66.
+
+2. How many outcomes are there in the sample space of an experiment in which we toss three dice?
+================================================================================================
+
+no.outcomes = 6 * 6 * 6
+            = 216
+            
+3. In an experiment where we roll four dice:
+
+i) how many outcomes are in the event total_equals_5_6_7 (i.e. the total of the four dice equals 5, 6 or 7)?
+
+```{r}
+roll_4_dice <- rolldie(4) %>% 
+  mutate(sum = X1 + X2 + X3 + X4)
+
+no_outcomes <- roll_4_dice %>% 
+  dplyr::filter(sum >= 5 & sum <= 7) %>% 
+  nrow()
+no_outcomes
+```
+
+ii) what is the probability of this event?
+
+```{r}
+prob_tot_5_6_7 <- no_outcomes / nrow(roll_4_dice)
+prob_tot_5_6_7
+```
+
+iii) what assumptions do we apply in answering part ii?
+All outcomes equally likely e.eg rolling 1,2,3,4,5,or 6
+
+4. Five chairs are placed in a row in a room, along with five people of differing height. The people sit down randomly on the chairs. What is the probability that they sit in order of decreasing height, left to right?
+==================================================================================================
+
+```{r}
+folk <- c("Shortest Jim", "Slightly taller Bob", "Average height Claire", "Taller than average Joe", "Tallest Sally")
+
+height_order <- as_tibble(permutations(n = 5, r = 5, v = folk, repeats.allowed = FALSE))
+
+height_order <- height_order %>% 
+  rename(chair_1 = V1,
+         chair_2 = V2,
+         chair_3 = V3,
+         chair_4 = V4,
+         chair_5 = V5)
+nrow(height_order)
+```
+
+```{r}
+height_order %>% 
+  dplyr::filter(chair_1 == "Tallest Sally",
+               chair_2 == "Taller than average Joe",
+               chair_3 == "Average height Claire",
+               chair_4 =="Slightly taller Bob",
+               chair_5 == "Shortest Jim") %>% 
+  summarise(prob = n() / nrow(height_order))
+
+```
+
+5. I roll six dice:
+what is the probability I see the numbers 6, 5, 4, 3, 2 and 1 in order on the dice, left to right?
+=================================================================================================
+```{r}
+dice_6 <- rolldie(6)
+dice_6
+
+dice_6 %>% 
+  dplyr::filter(X1 == 6,
+                X2 == 5,
+                X3 == 4,
+                X4 == 3,
+                X5 == 2,
+                X6 == 1) %>% 
+  summarise(n() / nrow(dice_6))
+
+```
+
+what is the probability I see one each of the numbers 6, 5, 4, 3, 2 and 1 on the dice regardless of order?
+=================================================================================================
+
+???
+
+
+Q6. If I draw a single card from a 52-card deck, and it is black, what is the probability that its suit is spades?
+
+```{r}
+cards <- cards(jokers = FALSE) %>% 
+ mutate(card = str_c(rank, str_sub(suit, start = 1, end = 1))) 
+
+cards_black_prob <- cards %>% 
+  mutate(black_card = str_detect(card, "C") | str_detect(card, "S")) %>% 
+  dplyr::filter(black_card == TRUE) %>% 
+  summarise(prob = n() / nrow(cards))
+cards_black_prob
+
+```
+
+
+
+

@@ -2,6 +2,6 @@ ignore_this.txt
 
 ignore_that/
 .Rproj.user
-*.csv 
 *.tsv
 *.txt
+*.csv
