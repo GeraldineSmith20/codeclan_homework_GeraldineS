@@ -4,4 +4,3 @@ ignore_that/
 .Rproj.user
 *.tsv
 *.txt
-*.csv

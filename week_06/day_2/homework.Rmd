@@ -45,22 +45,12 @@ samsung_phones %>%
   geom_histogram(col = "white")
 ```
 
-```{r}
-phones_pdf <- tibble(
-  r = seq(0.5, 5.5, by = 0.01),
-  f_r = dunif(x = r, min = 1, max = 5)
-)
 
-phones_pdf %>% 
-  ggplot(aes(x = r, y = f_r)) +
-  geom_line() +
-  xlab("rating") + ylab("f_r (probability density)")
-```
 
 ```{r}
 samsung_phones %>% 
   ggplot(aes(x = rating)) +
-  geom_histogram(aes(y = ..density..), col = "white", bins = 25) +
+  geom_histogram(aes(y = ..density..), col = "white") +
   stat_function(
     fun = dnorm, 
     args = list(
