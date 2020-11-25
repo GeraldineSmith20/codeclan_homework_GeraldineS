@@ -1,0 +1,77 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+```{r}
+library(tidyverse)
+library(infer)
+library(janitor)
+```
+
+```{r}
+ames_data <- read_csv("data/ames.csv") %>% 
+  clean_names() %>% 
+  select(lot_area)
+```
+
+```{r}
+ames_data %>% 
+  ggplot(aes(x = lot_area)) +
+  geom_histogram(col = "white", bins = 100)
+```
+The data has part of a normal bell curve, but the range of values is very large so there is a long tail but it cannot be seen on the chart because the count is very small compared with smaller lot areas.
+
+Bootstrap Sample
+```{r}
+bootstrap_sample <- ames_data %>% 
+  specify(response = lot_area) %>% 
+  generate(reps = 5000, type = "bootstrap") %>% 
+  calculate(stat = "mean")
+```
+
+```{r}
+bootstrap_sample %>% 
+ ggplot(aes(x = stat)) +
+  geom_histogram(col = "white", bins = 20)
+```
+
+```{r}
+ci_95 <- bootstrap_sample %>% 
+  get_ci(level = 0.95, type = "percentile")
+ci_95 
+```
+
+```{r}
+bootstrap_sample %>% 
+  visualise() +
+  shade_ci(endpoints = ci_95)
+```
+
+```{r}
+ci_99 <- bootstrap_sample %>% 
+  get_ci(level = 0.99, type = "percentile")
+ci_99
+```
+
+```{r}
+bootstrap_sample %>% 
+  visualise() +
+  shade_ci(endpoints = ci_99)
+```
+
+The range is broader, which makes sense as the confidence interval has increased.
+
+Point estimate
+```{r}
+ames_data %>%
+  summarise(
+    mean_lot_area = mean(lot_area)
+  )
+```
+
+
+
+
+
+
