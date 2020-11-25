@@ -22,6 +22,7 @@ titanic_data <- titanic_data %>%
   select(survived, is_passenger)
 ```
 
+
 ```{r}
 table <- titanic_data %>%
   tabyl(survived, is_passenger)
@@ -32,12 +33,20 @@ table <- table %>%
 table
 ```
 
+```{r}
+n_row_survived <- titanic_data %>% 
+  dplyr::filter(survived == "yes") %>% 
+  nrow()
+n_row_survived
+```
+
+
 prob( survived ∣ crew )
 
 ```{r}
 prob_survived_crew <- titanic_data %>% 
-  dplyr::filter(survived == "yes", is_passenger == FALSE) %>% 
-  summarise(prob = n() / nrow(titanic_data))
+  dplyr::filter(is_passenger == FALSE) %>% 
+  summarise(prob = sum(survived == "yes") / n())
 
 prob_survived_crew
 ```
@@ -46,8 +55,8 @@ prob( survived ∣ passenger )
 
 ```{r}
 prob_survived_passenger <- titanic_data %>% 
-  dplyr::filter(survived == "yes", is_passenger == TRUE) %>% 
-  summarise(prob = n() / nrow(titanic_data))
+  dplyr::filter(is_passenger == TRUE) %>% 
+  summarise(prob = sum(survived == "yes") / n())
 
 prob_survived_passenger
 ```

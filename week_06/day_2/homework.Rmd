@@ -1,0 +1,105 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+```{r}
+library(tidyverse)
+library(janitor)
+```
+
+
+```{r}
+mobiles <- read_csv("Data/20190928-items.csv") %>% 
+  clean_names()
+```
+
+
+```{r}
+mobiles %>% 
+  group_by(brand) %>% 
+  summarise(no_of_phones = n()) %>% 
+  slice_max(no_of_phones)
+```
+
+```{r}
+samsung_phones <- mobiles %>% 
+  filter(brand == "Samsung") %>% 
+  select(asin, rating)
+```
+
+```{r}
+max(samsung_phones$rating)
+min(samsung_phones$rating)
+```
+
+
+```{r}
+mean_ratings <- mean(samsung_phones$rating)
+std_dev_ratings <- sd(samsung_phones$rating)
+```
+
+```{r}
+samsung_phones %>% 
+  ggplot(aes(x = rating)) +
+  geom_histogram(col = "white")
+```
+
+```{r}
+phones_pdf <- tibble(
+  r = seq(0.5, 5.5, by = 0.01),
+  f_r = dunif(x = r, min = 1, max = 5)
+)
+
+phones_pdf %>% 
+  ggplot(aes(x = r, y = f_r)) +
+  geom_line() +
+  xlab("rating") + ylab("f_r (probability density)")
+```
+
+```{r}
+samsung_phones %>% 
+  ggplot(aes(x = rating)) +
+  geom_histogram(aes(y = ..density..), col = "white", bins = 25) +
+  stat_function(
+    fun = dnorm, 
+    args = list(
+      mean = mean_ratings, 
+      sd = std_dev_ratings
+    ),
+    col = "red"
+  )
+```
+
+```{r}
+samsung_phones %>% 
+  filter(rating >= mean_ratings - std_dev_ratings) %>% 
+  filter(rating <= mean_ratings + std_dev_ratings) %>% 
+  summarise(n()/nrow(samsung_phones))
+```
+
+```{r}
+samsung_phones %>% 
+  filter(rating >= mean_ratings - (2*std_dev_ratings)) %>% 
+  filter(rating <= mean_ratings + (2*std_dev_ratings)) %>% 
+  summarise(n()/nrow(samsung_phones))
+```
+
+```{r}
+samsung_phones %>% 
+  filter(rating >= mean_ratings - (3*std_dev_ratings)) %>% 
+  filter(rating <= mean_ratings + (3*std_dev_ratings)) %>% 
+  summarise(n()/nrow(samsung_phones))
+```
+
+```{r}
+qqnorm(samsung_phones$rating) + 
+  qqline(samsung_phones$rating)
+```
+
+
+
+
+
+
+
