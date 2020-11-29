@@ -1,0 +1,191 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+```{r}
+library(tidyverse)
+library(infer)
+```
+
+```{r}
+data(msleep)
+```
+
+Determine whether the mean sleep_total in sampled population of animal types differs from jabberwockies (7 hours on average)
+
+alpha = 0.05
+H0: Sample animals sleep_total = jabberwockies
+Ha: Sample animals sleep_total != jabberwockies
+
+```{r}
+msleep %>% 
+  ggplot(aes(x = sleep_total)) +
+  geom_histogram(bins = 50)
+```
+```{r}
+observed_stat <- msleep %>% 
+  summarise(mean_sleep = mean(sleep_total))
+
+observed_stat
+```
+
+```{r}
+null_distribution <- msleep %>% 
+  specify(response = sleep_total) %>% 
+  hypothesise(null = "point", mu = 10.434) %>% 
+  generate(reps = 1000, type = "bootstrap") %>% 
+  calculate(stat = "mean")
+
+null_distribution
+```
+```{r}
+null_distribution %>% 
+  visualise(bins = 30) +
+  shade_p_value(obs_stat = observed_stat$mean_sleep, direction = "both")
+```
+
+```{r}
+p_value <- null_distribution %>% 
+  get_p_value(obs_stat = observed_stat$mean_sleep, direction = "both")
+p_value
+```
+
+p_value is greater than alpha, fail to reject null hypothesis so cannot say that mean sleep_total of sample differs significantly from jabberwockies.
+----------------------------------------------------------------------------
+
+Perform an appropriate statistical test to determine whether omnivores sleep for significantly longer than herbivores, on average.
+
+alpha = 0.05
+H0: omnivores sleep_total = herbivores sleep_total
+Ha: omnivores sleep_total > herbivores sleep_total
+
+```{r}
+vore_comparison <- msleep %>%
+  filter(vore == "omni" |
+         vore == "herbi")
+
+vore_comparison %>% 
+  ggplot(aes(y = sleep_total, x = vore)) +
+  geom_boxplot()
+
+```
+
+```{r}
+null_distribution <- vore_comparison %>% 
+  specify(response = sleep_total, explanatory = vore) %>% 
+  hypothesise(null = "independence") %>% 
+  generate(reps = 10000, type = "permute") %>% 
+  calculate(stat = "diff in means", order = c("omni", "herbi"))
+null_distribution
+```
+```{r}
+observed_stat <- vore_comparison %>% 
+  specify(response = sleep_total, explanatory = vore) %>% 
+  calculate(stat = "diff in means", order = c("omni", "herbi"))
+
+observed_stat
+```
+
+```{r}
+null_distribution %>% 
+  visualise() +
+  shade_p_value(obs_stat = observed_stat, direction = "right")
+```
+
+```{r}
+null_distribution %>% 
+  get_p_value(obs_stat = observed_stat, direction = "right")
+```
+
+p value > alpha, therefore fail to reject null hypothesis so cannot say for certain that omnivores sleep more than herbivores on average.
+---------------------------------------------------------------------------
+Perform an appropriate statistical test to determine whether the proportion of domesticated animal types in the population of animal types is greater than 5%.
+[Hint - think about creating an is_domesticated variable for the analysis]
+
+```{r}
+domesticates <- msleep %>% 
+  mutate(is_domesticated = ifelse(conservation == "domesticated", "domesticated", "not domesticated")) %>% 
+  mutate(is_domesticated = ifelse(is.na(conservation) == TRUE, "not domesticated", is_domesticated))
+```
+
+```{r}
+prop_domesticated <- domesticates %>% 
+  group_by(is_domesticated) %>% 
+  summarise(prop = n() / nrow(domesticates)) %>% 
+  filter(is_domesticated == "domesticated")
+```
+alpha = 0.05
+H0:prop_domesticated = 0.05
+ha:prop_domesticated > 0.05
+
+```{r}
+null_distribution <- domesticates %>% 
+  specify(response = is_domesticated, success = "domesticated") %>% 
+  hypothesise(null = "point", p = 0.05) %>% 
+  generate(reps = 5000, type = "simulate") %>% 
+  calculate(stat = "prop")
+```
+
+```{r}
+null_distribution %>% 
+  visualise(bins = 10)
+```
+
+```{r}
+observed_stat <- domesticates %>% 
+  specify(response = is_domesticated, success = "domesticated") %>% 
+  calculate(stat = "prop")
+
+observed_stat
+```
+
+```{r}
+null_distribution %>% 
+  get_p_value(obs_stat = observed_stat, direction = "right")
+```
+
+p value < alpha, therefore reject H0 and it can be said that the proportion of domesticated animals > 0.05.
+
+
+Hypothesis Testing - Interpretation
+===================================
+1. H0: pi_before_marketing = pi_after_marketing
+   Ha: pi_after_marketing > pi_before_marketing
+   
+   H0: % Customer awareness of coffee store after marketing campaign = 40%
+   Ha: % Customer awareness of coffee store after marketing campaign > 40%
+   
+   Method = permutation
+   
+2. H0: pi_CTR_group1 = pi_CTR_test_group
+   Ha: pi_CTR_test_group > pi_CTR_group1
+   
+   H0: % click through rate in group 1(no changes to page) is the same as 
+       % click through rate in test group(banner moved to top)
+   Ha: % click through rate in group 1(no changes to page) is not the same        as % click through rate in test group(banner moved to top)
+   
+   Method = permutation
+
+3. H0: mu_mean_width = 145mm
+   Ha: mu_mean_width != 145mm
+   
+   H0: the mean width of the sample parts is equal to 145 mm
+   Ha: the mean width of the sample parts is not equal to 145 mm
+   
+   Method = bootstrap
+   
+Interpreting the Results
+==========================
+1. p value greater than alpha, therefore fail to reject null hypothesis therefore it can be said that there is no statistically significant increase in the % awareness of the coffee shop after marketing campaign.
+
+2. p value less than alpha, reject null hypothesis.  It can be said that the test group had a statistically significantly higher click through rate than group 1, therefore banner position made a statistically significant increase to click through rate.
+
+3. p value  greater than alpha, therefore fail to reject null hypothesis.  It can be said that it is statistically likely that the mean width of population parts is 145mm.
+
+
+
+
+
+
+
