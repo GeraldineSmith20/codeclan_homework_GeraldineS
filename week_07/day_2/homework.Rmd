@@ -1,0 +1,153 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+```{r}
+library(tidyverse)
+library(lubridate)
+library(tsibble)
+library(tsibbledata)
+library(fable)
+```
+
+Question 1:
+```{r}
+bike_data <- nyc_bikes %>% 
+  mutate(year = year(start_time),
+         month = month(start_time, label = TRUE),
+         date = as_date(start_time))
+```
+
+Question 2:
+```{r}
+bike_count <- bike_data %>% 
+  select(month) %>% 
+  index_by(month) %>% 
+  summarise(no_bikes = n())
+
+bike_count %>% 
+  ggplot(aes(x = month, y = no_bikes)) +
+  geom_point() +
+  geom_line(group = 1)
+```
+This would tell you there will likely be an increase in demand during the summer, but not about daily variation so you may need a finer level of granularity.
+
+Question 3:
+```{r}
+bike_count_date <- bike_data %>% 
+  select(date) %>% 
+  index_by(date) %>% 
+  summarise(no_bikes = n())
+
+bike_count_date %>% 
+  ggplot(aes(x = date, y = no_bikes)) +
+  geom_point() +
+  geom_line(group = 1)
+```
+This would be more helpful as it would tell you if particular days (eg weekends) are busier or public holidays are busier.
+
+Question 4:
+```{r}
+library(urca)
+
+padded_bike_count_date <- bike_count_date %>% 
+  fill_gaps(no_bikes = as.integer(median(no_bikes)))
+
+  
+  fit <- padded_bike_count_date %>% 
+  model(
+    snaive = SNAIVE(no_bikes),
+    mean_model = MEAN(no_bikes),
+    naive = NAIVE(no_bikes)
+  )
+fit
+```
+
+Question 5:
+```{r}
+forecast_1 <- fit %>% 
+  fabletools::forecast(h = 120)
+
+forecast_1 %>% 
+  autoplot(padded_bike_count_date) +
+  ggtitle("Forecast for NYC Bikes") +
+  xlab("Date") +
+  guides(colour = guide_legend(title = "Forecast"))
+```
+
+Question 6: First six months of year
+```{r}
+training <- padded_bike_count_date %>% 
+  filter_index("2018-01-01" ~ "2018-06-30")
+
+fit_training <- training %>% 
+  model(
+    mean_model = MEAN(no_bikes),
+    naive = NAIVE(no_bikes),
+    snaive = SNAIVE(no_bikes)
+  )
+```
+
+```{r}
+forecast_test <- fit_training %>%
+  fabletools::forecast(h = 180)
+forecast_test %>%
+  autoplot(training, level = NULL) +
+  autolayer(filter_index(padded_bike_count_date, "2018-07-01" ~ .), colour = "black") +
+  ggtitle("Forecasts for NYC Bike Use") +
+  xlab("Date") +
+  ylab("No. of Bikes") +
+  guides(colour = guide_legend(title = "Forecast"))
+```
+
+Accuracy
+```{r}
+accuracy_model <- fabletools::accuracy(forecast_test, padded_bike_count_date)
+
+accuracy_model
+```
+
+Question 7:
+Both the forecast plots and accuracy do not seem very accurate.  It appears the model does not recognise the seasonal effects of bike use and is prediciting a downward trend, even although it appeasrs there should be steady use of bikes at the lower level during Jan - April, with an increase after that.  I think it would help to have data from a couple of years so that the seasonal affects can be recognised by the models.  Also, if it were possible to use a model that better accounted for seasonal affects, that should perhaps be used and assessed. 
+
+Question 8:
+```{r}
+bike_data %>% 
+  ggplot(aes(x = start_long, y = start_lat, colour = month)) +
+  geom_point() +
+  facet_wrap(~ bike_id, ncol = 5)
+```
+
+```{r}
+bike_data %>% 
+  ggplot(aes(x = end_long, y = end_lat, colour = month)) +
+  geom_point() +
+  facet_wrap(~ bike_id, ncol = 5)
+```
+Some bikes mainly used in summer months and some only used in winter months.
+
+Question 9:
+```{r}
+library(leaflet)
+leaflet(bike_data) %>% 
+  addTiles() %>% 
+  addCircleMarkers(
+    lng = ~start_long, 
+    lat = ~start_lat, 
+    radius = ~ 5,
+    weight = 1)
+```
+
+```{r}
+
+```
+
+
+
+
+
+
+
+
+
