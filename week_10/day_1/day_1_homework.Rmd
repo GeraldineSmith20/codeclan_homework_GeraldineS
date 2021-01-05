@@ -1,0 +1,64 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+```{r}
+library(tidyverse)
+library(infer)
+library(ggfortify)
+library(broom)
+library(modelr)
+```
+
+```{r}
+project <- read_csv("data/project_management.csv")
+```
+
+```{r}
+project %>% 
+  ggplot(aes(x = estimated_length, y = actual_length)) +
+  geom_point() +
+  geom_text(aes(label = 1:nrow(project)))
+  
+```
+
+```{r}
+project %>% 
+  summarise(correlation = cor(estimated_length, actual_length))
+```
+
+A very strong positive correlation.
+
+```{r}
+model <- lm(formula = actual_length ~ estimated_length, data = project)
+
+model
+```
+
+```{r}
+tidy(model)
+```
+
+regression coefficient of 1.223 means that the actual length increases by 1.223 times estimated_length
+
+```{r}
+autoplot(model)
+```
+
+Residuals vs fitted and scale_location are not what is expected, so cannot rely on p value?
+
+```{r}
+par(mfrow = c(2, 2)) + 
+plot(model)
+```
+
+
+
+
+
+
+
+
+
+
