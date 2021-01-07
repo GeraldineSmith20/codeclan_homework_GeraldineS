@@ -1,0 +1,118 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+```{r}
+library(tidyverse)
+library(mosaicData)
+library(ggfortify)
+library(GGally)
+library(mosaic)
+library(fastDummies)
+```
+
+Question 1
+```{r}
+diamonds <- read_csv("diamonds.csv")
+```
+
+Question 2
+```{r}
+diamonds %>% 
+  ggpairs(columns = c("carat", "x", "y", "z"))
+```
+Question 3
+```{r}
+diamonds <- diamonds %>% 
+  select(-X1, -x, -y, -z)
+```
+
+Question 4i.
+```{r}
+diamonds %>% 
+  ggpairs()
+```
+
+Question 4ii.
+
+```{r}
+diamonds %>% 
+  ggplot(aes(x = cut, y = price)) +
+  geom_boxplot()
+```
+```{r}
+diamonds %>% 
+  ggplot(aes(x = color, y = price)) +
+  geom_boxplot()
+```
+```{r}
+diamonds %>% 
+  ggplot(aes(x = clarity, y = price)) +
+  geom_boxplot()
+```
+
+Question 5i.
+
+Cut - 5 dummy variables (-1 which can be determined by values in others) = 4
+Clarity - 8 dummy variables (-1) = 7
+Color - 7 dummy variables (-1) = 6
+
+Question 5ii.
+```{r}
+dummy_diamonds_cut <- diamonds %>% 
+  dummy_cols(select_columns = "cut", remove_first_dummy = TRUE)
+
+dummy_diamonds_cut
+```
+```{r}
+dummy_diamonds_clarity <- diamonds %>% 
+  dummy_cols(select_columns = "clarity", remove_first_dummy = TRUE)
+
+dummy_diamonds_clarity
+```
+```{r}
+dummy_diamonds_color <- diamonds %>% 
+  dummy_cols(select_columns = "color", remove_first_dummy = TRUE)
+
+dummy_diamonds_color
+```
+Question 6i.
+
+```{r}
+model_1 <- lm(price ~ carat, data = diamonds)
+summary(model_1)
+```
+
+```{r}
+model_2 <- lm(log(price) ~ log(carat), data = diamonds)
+summary(model_2)
+```
+
+Log of both values increases r squared to 0.933
+
+
+Question 6iii.
+```{r}
+model_3 <- lm(log(price) ~ log(carat) + clarity, data = diamonds)
+summary(model_3)
+```
+```{r}
+model_4 <- lm(log(price) ~ log(carat) + cut, data = diamonds)
+summary(model_4)
+```
+```{r}
+model_5 <- lm(log(price) ~ log(carat) + color, data = diamonds)
+summary(model_5)
+```
+
+Clarity is the best as it increased the r squared value the most.
+
+
+
+
+
+
+
+
+
