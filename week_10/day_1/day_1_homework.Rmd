@@ -37,7 +37,7 @@ model
 ```
 
 ```{r}
-tidy(model)
+summary(model)
 ```
 
 regression coefficient of 1.223 means that the actual length increases by 1.223 times estimated_length
@@ -46,7 +46,7 @@ regression coefficient of 1.223 means that the actual length increases by 1.223 
 autoplot(model)
 ```
 
-Residuals vs fitted and scale_location are not what is expected, so cannot rely on p value?
+
 
 ```{r}
 par(mfrow = c(2, 2)) + 

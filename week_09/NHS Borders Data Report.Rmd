@@ -1,0 +1,199 @@
+---
+title: "NHS Borders Cancer Incidence Report"
+output:
+  html_document: default
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+```{r, warning=FALSE, message=FALSE}
+library(tidyverse)
+library(fable)
+library(tsibble)
+library(feasts)
+library(tsibbledata)
+library(lubridate)
+
+cancer_data <- read_csv("data/opendata_inc9418_hb.csv")
+health_boards <- read_csv("data/geography_codes_and_labels_hb2014_01042019.csv")
+cancer_data_hb <- left_join(cancer_data, health_boards, "HB") %>% 
+  select(Year, HBName, CancerSite, Sex, IncidencesAllAges, EASR)
+
+scotland_data_easr <- cancer_data_hb %>% 
+  filter(CancerSite == "All cancer types") %>% 
+  filter(Sex == "All") %>% 
+  group_by(Year) %>% 
+  summarise(median_EASR = median(EASR))
+```
+
+<font size="4">
+This report details a number of insights into the trends of
+cancer incidence in the NHS Borders health board area.</font> 
+
+
+### Overview of Cancer Trends in Scotland
+<br>
+```{r, warning=FALSE, message=FALSE}
+cancer_data_hb %>% 
+  filter(CancerSite == "All cancer types") %>% 
+  filter(Sex == "All") %>% 
+  group_by(Year) %>% 
+  summarise(total_incidence = sum(IncidencesAllAges)) %>% 
+  ggplot(aes(x = Year, y = total_incidence/1000)) +
+  geom_line() +
+  scale_x_continuous(n.breaks = 14) +
+  scale_y_continuous(n.breaks = 10) +
+  scale_fill_brewer(palette = 1) +
+  labs(y = "Total Incidence (k)",
+       title = "Cancer Incidence Trend for Scotland") +
+  theme(plot.title = element_text(hjust = 0.5, vjust = 1, size=16),
+        panel.grid.major.y = element_blank(),
+        axis.text.y = element_text(hjust=1.5,size=10),
+        axis.title.y = element_text(vjust = 2.5),
+        axis.title.x = element_text(vjust = -1),
+        plot.background = element_rect(fill = "white", colour = "grey"),
+        panel.background = element_rect(fill = "white", colour = "grey"))
+```
+
+<font size="4">
+* Incidence of all cancers has grown steadily for the past 25 years  
+* 5.4% increase since 2014  
+* Age standardised rates are more representative of population/age profiles
+</font>
+<br>
+<br>
+<br>
+<br>
+
+### Cancer Trends in NHS Borders
+<br>
+```{r, warning=FALSE, message=FALSE}
+borders_overview <- cancer_data_hb %>% 
+  filter(CancerSite == "All cancer types") %>% 
+  filter(HBName =="NHS Borders") %>% 
+  filter(Sex == "All") 
+
+  ggplot() +
+  geom_line(data = scotland_data_easr, aes(x = Year, y = median_EASR, colour = "Scotland(Median)")) +
+  geom_line(data = borders_overview, aes(x = Year, y = EASR, colour = "NHS Borders")) +
+  scale_x_continuous(n.breaks = 14) +
+  labs(y = "European Age Standardised Rate (per 100,000 person years)",
+       title = "Cancer European Age Standardised Rate \nfor NHS Borders/Scotland(Median)")+
+  theme(plot.title = element_text(hjust = 0.5, vjust = 1, size=16),
+        panel.grid.major.y = element_blank(),
+        axis.text.y = element_text(hjust=1.5,size=10),
+        axis.title.y = element_text(vjust = 2.5),
+        axis.title.x = element_text(vjust = -1),
+        plot.background = element_rect(fill = "white", colour = "grey"),
+        panel.background = element_rect(fill = "white", colour = "grey"),
+        legend.title =element_blank()) +
+    scale_colour_brewer(palette = "Set2")
+```
+<font size="4">  
+* Trend for NHS borders rate has followed the Scottish median however has been<br>
+higher at many points over the last few years.<br>  
+* Population profile for Borders area</font>
+<br>
+<br>
+<br>
+
+### Cancer Types (by Gender)
+<br>
+```{r, warning=FALSE, message=FALSE}
+cancer_data_hb %>% 
+  filter(Sex == "Male") %>% 
+  filter(CancerSite != "All cancer types") %>% 
+  filter(HBName == "NHS Borders") %>% 
+  filter(Year >= 2014) %>% 
+  group_by(Year) %>% 
+  slice_max(order_by = IncidencesAllAges, n = 5) %>% 
+  ggplot(aes(x = Year, y = IncidencesAllAges, fill = CancerSite)) +
+  geom_col(position = "dodge") +
+  scale_fill_brewer(palette = "Set3") +
+  labs(y = "Total Incidences",
+       title = "Highest Incidence by Cancer Type (Male)") +
+  theme(legend.title = element_blank(),
+        plot.background = element_rect(fill = "white", colour = "grey"),
+        panel.background = element_rect(fill = "white", colour = "grey"))
+```
+<br>
+<font size="4">  
+* Cancer types with highest incidence for men<br>
+* Consistently been 6 major types, with non-melanoma skin cancer highest 
+incidence</font>  
+<br>
+<br>
+```{r, warning=FALSE, message=FALSE}
+cancer_data_hb %>% 
+  filter(Sex == "Female") %>% 
+  filter(CancerSite != "All cancer types") %>% 
+  filter(HBName == "NHS Borders") %>% 
+  filter(Year >= 2014) %>% 
+  group_by(Year) %>% 
+  slice_max(order_by = IncidencesAllAges, n = 5) %>% 
+  ggplot(aes(x = Year, y = IncidencesAllAges, fill = CancerSite)) +
+  geom_col(position = "dodge") +
+  scale_fill_brewer(palette = "Set3") +
+  labs(y = "Total Incidences",
+       title = "Highest Incidence by Cancer Type (Female)") +
+  theme(legend.title = element_blank(),
+        plot.background = element_rect(fill = "white", colour = "grey"),
+        panel.background = element_rect(fill = "white", colour = "grey"))
+```
+<br>
+<font size="4">  
+* Highest incidence cancer types have also been consistent in women  
+* Non-melanoma skin cancer and breast cancer</font>
+<br>
+<br>
+
+### Cancer Incidence (Top 5 Cancer Sites)
+<br>
+```{r, warning=FALSE, message=FALSE}
+top_sites <- c("Basil cell carcinoma of the skin",
+               "Breast",
+               "Carcinoma in situ of the cervix uteri",
+               "Colorectal cancer",
+               "Non-melanoma skin cancer",
+               "Trachea, bronchus and lung",
+               "Squamous cell carcinoma of the skin",
+               "Prostate")
+
+cancer_data_hb %>% 
+  filter(Sex != "All") %>% 
+  filter(CancerSite %in% top_sites) %>% 
+  filter(HBName == "NHS Borders") %>%
+  group_by(Year) %>% 
+  summarise(total_incidence = sum(IncidencesAllAges)) %>% 
+  ggplot(aes(x = Year, y = total_incidence)) +
+  geom_line() +
+  scale_x_continuous(n.breaks = 14) +
+  labs(y = "Total Incidences",
+       title = "Total Cancer Incidence by Top 5 Cancer Types ") +
+  theme(legend.title = element_blank(),
+        plot.background = element_rect(fill = "white", colour = "grey"),
+        panel.background = element_rect(fill = "white", colour = "grey"))
+```
+<br>
+<font size="4">  
+* Ideally, forecasting model would be used to predict incidence increase over
+next five years  
+* Due to time pressure, this was not carried out  
+* Overall incidence has shown upward trend over last few years  
+* Estimated mean value of last 5 years = 3% increase  
+* Planned available resources should take this increase into account for next 
+year, including a margin of error</font>
+<br>
+<br>  
+
+### Possible Further Work   
+<font size="4">
+* Increased domain knowledge would assist with grouping on cancer type  
+* Review of NHS Borders waiting times for cancer treatment  
+* Further exploration of any data on cancer survival because this could affect
+resource allocation</font>
+
+

@@ -1,0 +1,220 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+```{r}
+library(tidyverse)
+library(car)
+library(tidyverse)
+library(modelr)
+library(GGally)
+```
+
+```{r}
+houses <- read_csv("data/kc_house_data.csv")
+```
+
+```{r}
+houses <- houses %>% 
+  select(-c(date, id, sqft_living15, sqft_lot15, zipcode))
+```
+
+```{r}
+tail(houses)
+```
+```{r}
+houses %>% 
+  distinct(condition)
+```
+
+
+```{r}
+houses_sorted <- houses %>% 
+  mutate(waterfront = as.logical(waterfront)) %>% 
+  mutate(condition = as_factor(condition)) %>% 
+  mutate(grade = as_factor(grade)) %>% 
+  mutate(view = as_factor(view))
+    
+```
+
+```{r}
+houses_tidy <- houses_sorted %>% 
+  mutate(renovated = if_else(yr_renovated > 0, TRUE, FALSE)) %>% 
+  select(-yr_renovated)
+```
+
+```{r}
+summary(houses_tidy)
+```
+
+
+```{r}
+alias(lm(price ~ ., data = houses_tidy))
+```
+
+```{r}
+summary(houses_tidy)
+```
+
+
+```{r}
+houses_tidy <- houses_tidy %>% 
+  select(-sqft_living)
+```
+
+```{r}
+houses_tidy_numeric <- houses_tidy %>%
+  select_if(is.numeric)
+```
+
+```{r}
+houses_tidy_non_numeric <- houses_tidy %>%
+  select_if(function(x) !is.numeric(x))
+```
+
+```{r}
+houses_tidy_non_numeric$price <- houses_tidy$price
+```
+
+```{r}
+houses_tidy_numeric %>% 
+  ggpairs()
+```
+```{r}
+houses_tidy_non_numeric %>% 
+  ggpairs()
+```
+Decided on sqrft_above(highest correlation) and view(apparent trend in boxplots) or possibly grade?
+as the main predictors so far.
+
+```{r}
+mod1a <- lm(price ~ sqft_above, data = houses_tidy)
+```
+
+```{r}
+summary(mod1a)
+```
+
+```{r}
+mod1b <- lm(price ~ grade, data = houses_tidy)
+summary(mod1b)
+```
+anova
+```{r}
+null_model <- lm(price ~ 1, data = houses_tidy)
+anova(null_model, mod1b)
+```
+
+
+```{r}
+mod1c <- lm(price ~ waterfront, data = houses_tidy)
+summary(mod1c)
+```
+
+```{r}
+mod2a <- lm(price ~ sqft_above + waterfront, data = houses_tidy)
+summary(mod2a)
+```
+
+Anova
+
+```{r}
+anova(mod1a, mod2a)
+```
+
+
+```{r}
+par(mfrow = c(2, 2))
+plot(mod2a)
+```
+
+```{r}
+house_resid<- houses_tidy %>% 
+  add_residuals(mod1b) %>% 
+  select(-c("price", "grade"))
+```
+
+```{r}
+houses_resid_numeric <- house_resid %>%
+  select_if(is.numeric)
+```
+
+```{r}
+houses_resid_non_numeric <- house_resid %>%
+  select_if(function(x) !is.numeric(x))
+```
+
+```{r}
+houses_resid_non_numeric$resid <- house_resid$resid
+```
+
+```{r}
+ggpairs(houses_resid_numeric)
+```
+
+```{r}
+ggpairs(houses_resid_non_numeric)
+```
+
+```{r}
+mod2b <- lm(price ~ grade + lat, data = houses_tidy )
+summary(mod2b)
+```
+
+```{r}
+mod2c <- lm(price ~ grade + waterfront, data = houses_tidy)
+summary(mod2c)
+```
+
+```{r}
+par(mfrow = c(2, 2))
+plot(mod2c)
+```
+
+```{r}
+house_resid<- houses_tidy %>% 
+  add_residuals(mod2b) %>% 
+  select(-c("price", "grade", "lat"))
+```
+
+```{r}
+houses_resid_numeric <- house_resid %>%
+  select_if(is.numeric)
+```
+
+```{r}
+houses_resid_non_numeric <- house_resid %>%
+  select_if(function(x) !is.numeric(x))
+```
+
+```{r}
+houses_resid_non_numeric$resid <- house_resid$resid
+```
+
+```{r}
+houses_resid_numeric %>% 
+  ggpairs()
+```
+
+```{r}
+ggpairs(houses_resid_non_numeric)
+```
+
+```{r}
+mod3a <- lm(price ~ grade + lat + sqft_basement, data = houses_tidy)
+summary(mod3a)
+```
+
+```{r}
+mod3b <- lm(price ~ grade + lat + waterfront, data = houses_tidy)
+summary(mod3b)
+```
+
+waterfront is best - mod3b
+
+```{r}
+par(mfrow = c(2, 2))
+plot(mod3b)
+```
+

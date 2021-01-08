@@ -1,0 +1,255 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+```{r}
+library(tidyverse)
+library(fable)
+library(tsibble)
+library(feasts)
+library(tsibbledata)
+library(lubridate)
+```
+
+
+```{r}
+cancer_data <- read_csv("data/opendata_inc9418_hb.csv")
+```
+
+```{r}
+health_boards <- read_csv("data/geography_codes_and_labels_hb2014_01042019.csv")
+```
+
+```{r}
+cancer_data_hb <- left_join(cancer_data, health_boards, "HB") %>% 
+  select(Year, HBName, CancerSite, Sex, IncidencesAllAges, EASR)
+```
+
+```{r}
+cancer_data_hb %>% 
+  filter(CancerSite == "All cancer types") %>% 
+  slice_max(EASR)
+```
+
+```{r}
+cancer_data_hb %>% 
+  filter(CancerSite == "All cancer types") %>% 
+  filter(Sex == "All") %>% 
+  group_by(Year) %>% 
+  summarise(total_incidence = sum(IncidencesAllAges)) %>% 
+  ggplot(aes(x = Year, y = total_incidence/1000)) +
+  geom_line() +
+  scale_x_continuous(n.breaks = 14) +
+  scale_y_continuous(n.breaks = 10) +
+  scale_fill_brewer(palette = 1) +
+  labs(y = "Total Incidence (k)",
+       title = "Cancer Incidence Trend for Scotland")+
+  theme(plot.title = element_text(hjust = 0.5, vjust = 1, size=16),
+        panel.grid.major.y = element_blank(),
+        axis.text.y = element_text(hjust=1.5,size=10),
+        axis.title.y = element_text(vjust = 2.5),
+        axis.title.x = element_text(vjust = -1),
+        plot.background = element_rect(fill = "white", colour = "grey"),
+        panel.background = element_rect(fill = "white", colour = "grey"))
+```
+
+```{r}
+scotland_data_easr <- cancer_data_hb %>% 
+  filter(CancerSite == "All cancer types") %>% 
+  filter(Sex == "All") %>% 
+  group_by(Year) %>% 
+  summarise(median_EASR = median(EASR))
+
+scotland_data_easr %>% 
+  ggplot(aes(x = Year, y = median_EASR)) +
+  geom_line() +
+  scale_x_continuous(n.breaks = 14) +
+  scale_y_continuous(n.breaks = 10) +
+  scale_fill_brewer(palette = 1) +
+  labs(y = "EASR (per 100,000 person years)",
+       title = "Median Cancer Incidence \nEuropean Age Standardised Rate for Scotland") +
+  theme(plot.title = element_text(hjust = 0.5, vjust = 1, size=16),
+        panel.grid.major.y = element_blank(),
+        axis.text.y = element_text(hjust=1.5,size=10),
+        axis.title.y = element_text(vjust = 2.5),
+        axis.title.x = element_text(vjust = -1),
+        plot.background = element_rect(fill = "white", colour = "grey"),
+        panel.background = element_rect(fill = "white", colour = "grey"))
+```
+
+```{r}
+borders_overview <- cancer_data_hb %>% 
+  filter(CancerSite == "All cancer types") %>% 
+  filter(HBName =="NHS Borders") %>% 
+  filter(Sex == "All") 
+
+  ggplot() +
+  geom_line(data = scotland_data_easr, aes(x = Year, y = median_EASR, colour = "Scotland(Median)")) +
+  geom_line(data = borders_overview, aes(x = Year, y = EASR, colour = "NHS Borders")) +
+  scale_x_continuous(n.breaks = 14) +
+  labs(y = "European Age Standardised Rate (per 100,000 person years)",
+       title = "Cancer European Age Standardised Rate \nfor NHS Borders/Scotland(Median)")+
+  theme(plot.title = element_text(hjust = 0.5, vjust = 1, size=16),
+        panel.grid.major.y = element_blank(),
+        axis.text.y = element_text(hjust=1.5,size=10),
+        axis.title.y = element_text(vjust = 2.5),
+        axis.title.x = element_text(vjust = -1),
+        plot.background = element_rect(fill = "white", colour = "grey"),
+        panel.background = element_rect(fill = "white", colour = "grey"),
+        legend.title =element_blank()) +
+    scale_colour_brewer(palette = "Set2")
+```
+
+```{r}
+fit <- borders_overview %>%
+  model(
+    naive = NAIVE(CrudeRate),
+    mean_model = MEAN(CrudeRate),
+    arima = ARIMA(CrudeRate),
+    ets = ETS(CrudeRate)
+  )
+fit
+```
+
+```{r}
+borders_forecast <- fit %>% 
+  fabletools::forecast(h = 5)
+
+borders_forecast
+```
+```{r}
+borders_overview_shorter <- borders_overview %>% 
+  filter(Year >= 2010)
+```
+
+
+```{r}
+borders_forecast %>% 
+  filter(.model == "arima") %>% 
+  autoplot(borders_overview) +
+  scale_x_date("Year")
+```
+
+```{r}
+train <- borders_overview %>% 
+  filter_index("1994" ~ "2013")
+
+fit_train <- train %>% 
+  model(
+    mean_model = MEAN(CrudeRate),
+    arima = ARIMA(CrudeRate),
+    naive = NAIVE(CrudeRate),
+    ets = ETS(CrudeRate)
+  )
+```
+
+```{r}
+forecast_test <- fit_train %>% 
+  fabletools::forecast(h = 5)
+
+forecast_test %>% 
+  autoplot(train, level = NULL) +
+  autolayer(filter_index(borders_overview, "2014" ~ .), color = "black") +
+  ggtitle("Forecasts for NHS Borders Cancer Crude Rates") +
+    xlab("Year") + ylab("Crude Rate") +
+    guides(colour=guide_legend(title="Forecast"))
+```
+
+```{r}
+head(borders_overview)
+```
+
+
+```{r}
+cancer_data_hb %>% 
+  filter(Sex == "All") %>% 
+  filter(CancerSite != "All cancer types") %>% 
+  filter(HBName == "NHS Borders") %>% 
+  group_by(CancerSite) %>% 
+  summarise(total_incidence = sum(IncidencesAllAges)) %>% 
+  arrange(desc(total_incidence))
+```
+
+```{r}
+cancer_data_hb %>% 
+  filter(Sex == "Male" | Sex == "Female") %>% 
+  filter(CancerSite != "All cancer types") %>% 
+  filter(HBName == "NHS Borders") %>% 
+  filter(Year >= 2015) %>% 
+  group_by(Year) %>% 
+  slice_max(order_by = IncidencesAllAges, n = 5) %>% 
+  ggplot(aes(x = Year, y = IncidencesAllAges, colour = CancerSite)) +
+  geom_line() +
+  facet_wrap(~ Sex)
+```
+
+```{r}
+cancer_data_hb %>% 
+  filter(Sex == "Male") %>% 
+  filter(CancerSite != "All cancer types") %>% 
+  filter(HBName == "NHS Borders") %>% 
+  filter(Year >= 2014) %>% 
+  group_by(Year) %>% 
+  slice_max(order_by = IncidencesAllAges, n = 5) %>% 
+  ggplot(aes(x = Year, y = IncidencesAllAges, fill = CancerSite)) +
+  geom_col(position = "dodge") +
+  scale_fill_brewer(palette = "Set3") +
+  labs(y = "Total Incidences",
+       title = "Highest Incidence by Cancer Type (Male)") +
+  theme(legend.title = element_blank(),
+        plot.background = element_rect(fill = "white", colour = "grey"),
+        panel.background = element_rect(fill = "white", colour = "grey"))
+  
+```
+
+```{r}
+cancer_data_hb %>% 
+  filter(Sex == "Female") %>% 
+  filter(CancerSite != "All cancer types") %>% 
+  filter(HBName == "NHS Borders") %>% 
+  filter(Year >= 2014) %>% 
+  group_by(Year) %>% 
+  slice_max(order_by = IncidencesAllAges, n = 5) %>% 
+  ggplot(aes(x = Year, y = IncidencesAllAges, fill = CancerSite)) +
+  geom_col(position = "dodge") +
+  scale_fill_brewer(palette = "Set3") +
+  labs(y = "Total Incidences",
+       title = "Highest Incidence by Cancer Type (Female)") +
+  theme(legend.title = element_blank(),
+        plot.background = element_rect(fill = "white", colour = "grey"),
+        panel.background = element_rect(fill = "white", colour = "grey"))
+```
+
+```{r}
+top_sites <- c("Basil cell carcinoma of the skin",
+               "Breast",
+               "Carcinoma in situ of the cervix uteri",
+               "Colorectal cancer",
+               "Non-melanoma skin cancer",
+               "Trachea, bronchus and lung",
+               "Squamous cell carcinoma of the skin",
+               "Prostate")
+
+cancer_data_hb %>% 
+  filter(Sex != "All") %>% 
+  filter(CancerSite %in% top_sites) %>% 
+  filter(HBName == "NHS Borders") %>%
+  group_by(Year) %>% 
+  summarise(total_incidence = sum(IncidencesAllAges)) %>% 
+  ggplot(aes(x = Year, y = total_incidence)) +
+  geom_line() +
+  scale_x_continuous(n.breaks = 14) +
+  labs(y = "Total Incidences",
+       title = "Total Cancer Incidence by Top 5 Cancer Types ") +
+  theme(legend.title = element_blank(),
+        plot.background = element_rect(fill = "white", colour = "grey"),
+        panel.background = element_rect(fill = "white", colour = "grey"))
+  
+```
+
+
+
+
+
+

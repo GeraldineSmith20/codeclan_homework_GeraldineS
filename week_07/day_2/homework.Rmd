@@ -70,7 +70,7 @@ forecast_1 <- fit %>%
   fabletools::forecast(h = 120)
 
 forecast_1 %>% 
-  autoplot(padded_bike_count_date) +
+  autoplot(padded_bike_count_date, level = NULL) +
   ggtitle("Forecast for NYC Bikes") +
   xlab("Date") +
   guides(colour = guide_legend(title = "Forecast"))
@@ -79,7 +79,7 @@ forecast_1 %>%
 Question 6: First six months of year
 ```{r}
 training <- padded_bike_count_date %>% 
-  filter_index("2018-01-01" ~ "2018-06-30")
+  filter_index("2018-01-01" ~ "2018-10-30")
 
 fit_training <- training %>% 
   model(
@@ -94,7 +94,7 @@ forecast_test <- fit_training %>%
   fabletools::forecast(h = 180)
 forecast_test %>%
   autoplot(training, level = NULL) +
-  autolayer(filter_index(padded_bike_count_date, "2018-07-01" ~ .), colour = "black") +
+  autolayer(padded_bike_count_date, colour = "black") +
   ggtitle("Forecasts for NYC Bike Use") +
   xlab("Date") +
   ylab("No. of Bikes") +
@@ -137,10 +137,6 @@ leaflet(bike_data) %>%
     lat = ~start_lat, 
     radius = ~ 5,
     weight = 1)
-```
-
-```{r}
-
 ```
 
 

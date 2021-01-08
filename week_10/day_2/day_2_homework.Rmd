@@ -83,10 +83,18 @@ Question 6i.
 model_1 <- lm(price ~ carat, data = diamonds)
 summary(model_1)
 ```
+```{r}
+plot(model_1)
+```
+
 
 ```{r}
 model_2 <- lm(log(price) ~ log(carat), data = diamonds)
 summary(model_2)
+```
+
+```{r}
+plot(model_2)
 ```
 
 Log of both values increases r squared to 0.933
