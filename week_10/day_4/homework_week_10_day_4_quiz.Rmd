@@ -1,0 +1,123 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+Question 1
+===========
+This model would be overfitting, because it is looking at too many 
+complex factors.
+
+Question 2
+===========
+Use the lower of the values as lower is better for aIC - 33,539.
+
+Question 3
+==========
+You should use the first model, where adjusted r-squared is 0.43 because 
+r squared will always increase with new variables added whereas 
+adjusted r squared only increases if the new variable improves the model more
+than would be expected by chance.
+
+Question 4
+==========
+No, this model is well fitting because the error on test is less than the error 
+on training data???
+
+
+Question 5
+==========
+K-fold validation involves splitting a data set into a number of subsets(or folds).
+These folds can then be used to create multiple models of the same data.  
+For example a data set could be split into five folds and five models created 
+using a different fold for the test set each time e.g.
+Model 1 - Training 1,2,3,4 Test 5
+Model 2 - Training 1,2,3,5 Test 4
+Model 3 - Training 1,2,4,5 Test 3
+Model 4 - Training 1,3,4,5 Test 2
+Model 5 - Training 2,3,4,5 Test 1
+
+The average error can then be calculated across each model and used to assess
+the best model.
+
+Question 6
+==========
+A validation set is a set of data that is not used to test or train when 
+creating a model, and is only used once a model is chosen .  It is needed because
+overfitting to test sets can happen because options are selected that work well 
+on the test set and are biased towards it.  
+
+Question 7
+==========
+Backwards selection involves setting up a model using all possible predictors 
+and then removing the variable that lowers r squared by the smallest amount. This
+can be repeated until all predictors have been removed.
+
+Question 8
+===========
+Best subset selection involves an exhaustivs search for the best combination of
+predictors.  Predictors can be added or dropped at any time (unlike forwards 
+once they are added they remain in model).  This method is comuptationally heavy,
+as effort increases exponentially with numbers of predictors.
+
+Question 9
+===========
+- documentation for the model is available covering business context, 
+design rationale, audit trail of variable choices, model explainability,
+validation on recent data set, implementation instructions
+
+Question 10
+============
+Population Stability Index (PSI) and Characteristic Stability Index
+
+Question 11
+===========
+Population stability index compares the distribution of a scoring variable that 
+was used in the training data set versus a recent dataset extracted from production.
+It compares the current scoring versus the predicted probability from the 
+training data set
+
+Question 12
+=============
+Change or recalibration of model should be considered if PSI > 0.1
+
+Question 13
+===========
+Before a model is considered for deployment, one should ensure
+- all variables have passed a sense-check and are there for a purpose
+- no protected characteristics are used in the model in case of bias eg. gender
+or race
+- the data set should be reviewed for proxy variables for protected characteristics
+to ensure that proxy bias is also minimised e.g. certain occupations are more 
+likely to involve certain genders
+- model stability - i.e. that the model will not instantly degrade too much and is 
+reliant on enough variables rather than a small number
+- that the model works with production data
+- it is valid for use in the chosen business context
+
+Question 14
+============
+Gradual deterioration of any model is expected and this should be monitored and
+recalibration carried out.  If a surpising change is observed, root cause
+investigation is usually required to determine what fundamental change has occured.
+
+Question 15
+============
+A model is built for a certain situation/business context and therefore having
+a unique identifier ensures it can be change controlled in an appropriate manner.
+
+Question 16
+===========
+is is important to record the modelling rationale so that users of the output
+understand the business context of when it can be used and more importantly when
+it is not suitable to be used.  It helps others understand why certain techniques
+were used and can be useful if there are problems in the future with the model output.
+
+
+
+
+
+
+
+
+

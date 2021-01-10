@@ -1,0 +1,149 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+Building explanatory model
+
+```{r}
+library(tidyverse)
+library(modelr)
+library(GGally)
+library(lubridate)
+```
+
+```{r}
+avocados <- read_csv("data/avocado.csv")
+```
+
+```{r}
+avocados
+```
+```{r}
+avocados %>% 
+  distinct(region)
+```
+
+```{r}
+avocados_tidy <- avocados %>% 
+  mutate(month = month(Date))
+  
+```
+
+
+```{r}
+avocados_tidy <- avocados_tidy %>% 
+  mutate(season = case_when(between(month, 3, 5) ~ "Spring",
+                            between(month, 6, 8) ~ "Summer",
+                            between(month, 9, 11) ~ "Fall",
+                            between(month, 1, 2) ~ "Winter",
+                            TRUE ~ "Winter"
+                            )
+         )
+```
+
+Not sure whether to do this or not........
+```{r}
+avocados_test <- avocados_tidy %>% 
+  pivot_longer(cols = c("plu_4046", "plu_4225", "plu_4770"), names_to = "variety", values_to = "qty_avocados_sold")
+
+avocados_test <- avocados_test %>% 
+   mutate(type = as_factor(type)) %>% 
+  mutate(season = as_factor(season))
+```
+
+
+```{r}
+avocados_tidy <- avocados_tidy %>% 
+  select(-c(X1, Date, year, month, "Total Bags", "Total Volume", region))
+```
+
+```{r}
+avocados_tidy <- avocados_tidy %>% 
+  mutate(type = as_factor(type)) %>% 
+  mutate(season = as_factor(season))
+```
+
+```{r}
+avocados_tidy <- avocados_tidy %>% 
+  rename(plu_4046 = "4046",
+         plu_4225 = "4225",
+         plu_4770 = "4770")
+```
+
+First model
+
+```{r}
+avocados_tidy %>% 
+  ggpairs() %>% 
+  ggsave(filename = "ggpairs", device = "jpeg")
+```
+
+From ggpairs output, type and 4046 look like most promising predictors
+```{r}
+mod1a <- lm(AveragePrice ~ plu_4046, data = avocados_tidy)
+summary(mod1a)
+```
+
+R squared is very low (0.0434) so now trying type as predictor
+```{r}
+mod1b <- lm(AveragePrice ~ type, data = avocados_tidy)
+mod1b
+```
+
+```{r}
+summary(mod1b)
+```
+
+```{r}
+par(mfrow = c(2,2))
+plot(mod1b)
+```
+These plots look ok for categorical type so moving on to second predictor
+
+```{r}
+avocados_rem_residuals <- avocados_tidy %>% 
+  add_residuals(mod1b) %>% 
+  select(-c("AveragePrice", "type"))
+```
+
+```{r}
+avocados_rem_residuals %>% 
+  ggpairs() %>% 
+  ggsave(filename = "ggpairs_2nd", device = "jpeg")
+```
+
+Second predictor - looks like season is the only thing that may have some affect
+```{r}
+mod2a <- lm(AveragePrice ~ type + season, data = avocados_tidy)
+summary(mod2a)
+```
+
+```{r}
+par(mfrow = c(2,2))
+plot(mod2a)
+```
+Again all these plots look reasonable, but the r squared value is still 
+relatively low at 0.431 (with mod 2a type + season)
+
+Third predictor
+```{r}
+avocados_rem_residuals <- avocados_tidy %>% 
+  add_residuals(mod2a) %>% 
+  select(-c("AveragePrice", "type", "season"))
+```
+
+```{r}
+avocados_rem_residuals %>% 
+  ggpairs() %>% 
+  ggsave(filename = "ggpairs_3rd", device = "jpeg")
+```
+
+```{r}
+mod3a <- lm(AveragePrice ~ type + season + plu_4046, data = avocados_tidy)
+summary(mod3a)
+```
+
+
+
+
