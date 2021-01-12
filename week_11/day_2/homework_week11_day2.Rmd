@@ -1,0 +1,140 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+```{r}
+library(rpart)
+library(rpart.plot)
+library(tidyverse)
+library(modelr)
+library(yardstick)
+library(caret)
+library(randomForest)
+library(GGally)
+```
+
+```{r}
+titanic <- read_csv("data/titanic_decision_tree_data.csv")
+```
+
+Question 1
+```{r}
+titanic_clean <- titanic %>% 
+  drop_na(survived, age) %>% 
+  mutate(sex = factor(sex),
+         survived = factor(if_else(survived == 1, "Survived", "Died")),
+         pclass = factor(pclass),
+         embarked = factor(embarked),
+         age_status = factor(if_else(age > 16, "Adult", "Child"))) %>% 
+  select(-c(X1, passenger_id, name, ticket, fare, cabin))
+  
+```
+
+Question 2
+```{r}
+titanic_clean %>% 
+  ggpairs()
+```
+
+From the boxplots above, it looks like pclass, sex and embarked may be variables
+of interest.  Age status may also be a factor but hard to tell.
+
+Question 3
+```{r}
+n_data <- nrow(titanic_clean)
+```
+
+```{r}
+test_index <- sample(1:n_data, size = n_data * 0.2)
+```
+
+```{r}
+titanic_test <- slice(titanic_clean, test_index)
+titanic_train <- slice(titanic_clean, -test_index)
+```
+
+```{r}
+titanic_test %>% 
+  janitor::tabyl(survived)
+```
+
+```{r}
+titanic_train %>% 
+  janitor::tabyl(survived)
+```
+
+This split for both sets is close, so ok to proceed with analysis. The split of
+the data is using a random sample of 20% of the row numbers to create the test sample
+and the remaining rows are the training sample.
+
+Question 4
+```{r}
+titanic_fit <- rpart(
+  formula = survived ~ .,
+  data = titanic_train,
+  method = "class"
+)
+```
+
+```{r}
+rpart.plot(titanic_fit, yesno = 2, fallen.leaves = TRUE, faclen = 6, digits = 4,
+           type = 4, extra = 101)
+```
+
+Question 5
+
+The model tells us that 63.81% of passengers who died were male, versus 36.19 % 
+female.
+338 people died versus 234 survived.  Of the 234 survivors, 156 were women and 
+78 were men.
+Of the 338 people who died, 287 were men and 51 were women
+
+For males, if you were older than 13 you were more likely to die. If you were
+male, under 13 and had less than 3 siblings aboard you were less likely to die
+(19 survived versus 1)
+
+For females, if you were in passenger class 1,2 you had better chance of surviving
+versus those in passenger class 3(115 versus 41)
+
+For those in class 3 who were female, if you were younger than 38.5 and had less 
+than 3 siblings/spouses you were more likely to survive.
+
+Variables of importance - sex, age, class, number siblings/spouses
+
+Highest chance of survival - female in class 1,2
+Lowest chance of survival - male older than 13
+
+Question 6
+
+```{r}
+titanic_test_pred <- titanic_test %>% 
+  add_predictions(titanic_fit, type = "class")
+
+titanic_test_pred 
+```
+
+```{r}
+confusion_matrix <- titanic_test_pred %>% 
+  conf_mat(truth = survived, estimate = pred)
+
+confusion_matrix
+```
+
+Model predicted 75 people died accurately.
+Model predicted 42 people survived accurately.
+
+Model incorrectly predicted 14 survived but they actually died.
+Model incorrectly predicted 11 died but they actually survived.
+
+
+
+
+
+
+
+
+
+
+
+
