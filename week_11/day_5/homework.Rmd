@@ -1,0 +1,187 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+```{r}
+library(tidyverse)
+library(janitor)
+library(GGally)
+library(modelr)
+library(broom)
+library(glmulti)
+library(caret)
+```
+
+```{r}
+oj <- read_csv("data/orange_juice.csv") %>% 
+  clean_names()
+```
+
+```{r}
+oj <- oj %>% 
+  mutate(purchase_mm = factor(if_else(purchase == "MM", "Yes","No"))) %>% 
+  select(-purchase)
+```
+
+```{r}
+oj_factored <- oj %>% 
+  mutate(store_id = factor(store_id),
+         special_ch = factor(special_ch),
+         special_mm = factor(special_mm),
+         store7 = factor(store7),
+         store = factor(store)
+         ) %>% 
+  select(-c(price_ch, price_mm, disc_ch, disc_mm, store7, price_diff, store))
+```
+
+```{r}
+oj_factored %>% 
+  distinct(store_id)
+```
+
+
+```{r}
+alias(purchase_mm ~ ., data = oj_factored)
+```
+
+```{r}
+oj_factored %>% 
+  ggpairs()
+```
+
+There seems to be possible correlation with store_id, special_ch, special_mm,
+loyal_ch.  Surprisingly, the price does not seem to have that great an effect?
+
+```{r}
+glmulti_model_all_preds <- glmulti(purchase_mm ~ .,
+                         data = oj_factored,
+                         level = 1,
+                         method = "h",
+                         crit = "bic",
+                         confsetsize = 10,
+                         plotty = F,
+                         report = T,
+                         fitfunction = "glm",
+                         family = binomial(link = "logit"))
+
+summary(glmulti_model_all_preds)
+```
+
+Model with added pair interaction
+```{r}
+gl_multi_pair_int <- glmulti(purchase_mm ~ loyal_ch + sale_price_mm + sale_price_ch,
+                         data = oj_factored,
+                         level = 2,
+                         method = "h",
+                         crit = "bic",
+                         confsetsize = 10,
+                         marginality = TRUE,
+                         minsize = 4,
+                         maxsize = 4,
+                         plotty = F,
+                         report = T,
+                         fitfunction = "glm",
+                         family = binomial(link = "logit"))
+
+summary(gl_multi_pair_int)
+```
+
+Adding pair interaction has increased the BIC value so this suggests this model
+is not as good a fit and should leave it with original predictors.
+
+Cross Validation
+
+```{r}
+train_control <- trainControl(method = "repeatedcv", 
+                              number = 5,
+                              repeats = 100,
+                              savePredictions = TRUE, 
+                              classProbs = TRUE, 
+                              summaryFunction = twoClassSummary)
+
+```
+
+```{r}
+model <- train(purchase_mm ~ loyal_ch + sale_price_mm + sale_price_ch,
+               data = oj_factored,
+               trControl = train_control,
+               method = "glm",
+               family = binomial(link = 'logit'))
+```
+
+```{r}
+summary(model)
+```
+
+```{r}
+model$results
+```
+
+ROC = AUC value and 0.89 is pretty good?
+
+Text-Mining Section
+```{r}
+library(janeaustenr)
+library(text2vec)
+library(tidyr)
+library(tidytext)
+```
+
+```{r}
+pride_tibble <- tibble(
+  line = prideprejudice,
+  line_no = 1:length(prideprejudice)
+)
+```
+
+```{r}
+sense_tibble <- tibble(
+  line = sensesensibility,
+  line_no = seq(from = (length(prideprejudice) + 1), to = (length(prideprejudice) + length(sensesensibility)), by = 1)
+)
+```
+
+```{r}
+books <- bind_rows(pride_tibble, sense_tibble)
+```
+
+Find the most common words in both Pride & Prejudice and Sense & Sensibility
+```{r}
+books <- books %>% 
+  unnest_tokens(word, line) %>% 
+  count(word, sort = TRUE)
+```
+
+Find the most common words in both Pride & Prejudice and Sense & Sensibility, not including stop words.
+```{r}
+books %>% 
+  anti_join(stop_words)
+```
+
+Find the most common sentiment words in both Pride & Prejudice and Sense & Sensibility.
+```{r}
+books %>% 
+  anti_join(stop_words) %>% 
+  left_join(get_sentiments("bing")) %>% 
+  filter(sentiment == "negative" | sentiment == "positive")
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
