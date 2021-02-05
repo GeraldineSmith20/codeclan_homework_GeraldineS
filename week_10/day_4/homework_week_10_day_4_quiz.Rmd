@@ -68,7 +68,7 @@ validation on recent data set, implementation instructions
 
 Question 10
 ============
-Population Stability Index (PSI) and Characteristic Stability Index
+Population Stability Index (PSI)
 
 Question 11
 ===========
@@ -112,7 +112,6 @@ is is important to record the modelling rationale so that users of the output
 understand the business context of when it can be used and more importantly when
 it is not suitable to be used.  It helps others understand why certain techniques
 were used and can be useful if there are problems in the future with the model output.
-
 
 
 

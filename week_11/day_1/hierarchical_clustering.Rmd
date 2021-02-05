@@ -71,17 +71,16 @@ Advantages
 Disadvantages
 
 * Lacks scalability for handling large data sets
-* Difficult to interpret dendrogram for large numbers of clusters
+* Difficult to interpret dendrogram for large numbers of clusters  
 
-### Areas of Application  
+### Areas of Application
 
 * Animal evolution phylogenetic trees
 * Virus evolution phylogenetic trees
-* Gene expression profile analysis
+* Gene expression profile analysis  
 
 
-### Example Use-Case  
-
+### Example Use-Case   
 Hierarchical clustering was used as evidence in a criminal court case to convict 
 a doctor who had injected a former partner with the HIV virus using blood products
 obtained from one of his patients.
